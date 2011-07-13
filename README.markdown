@@ -40,7 +40,7 @@ jar file which doesn't depend on any other jar files.
   
 #### Usage:
 
-   java -jar yapp [options] <yapp grammar file>
+   java -jar yapp [options] yapp-grammar-file (.ypp)
        
 ###  Available options:
 + --pre: specify parser class' prefix"
