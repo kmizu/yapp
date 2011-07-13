@@ -1,0 +1,59 @@
+macro $key(#K) = #K !([a-zA-Z0-9_$]) S;
+macro $sep(#K) = #K S;
+macro $special(#K) = #K ST;
+
+program = S declaration (!EOT ^ declaration)* EOT;
+declaration = !(VAR) ^ functionDeclaration / variableDeclaration;
+variableDeclaration = VAR IDENT_S (SEMI / LN);
+functionDeclaration = FUN IDENT LPAREN bounded{(IDENT (COMMA IDENT)*)?} RPAREN LB (!(RB) ^ statement)* RB;
+block = LB (!(RB) ^ statement)* RB;
+statement = PRINT ^ LPAREN expression RPAREN_S (SEMI / LN)
+          / &(LB) ^ block 
+          / &(IF) ^ ifStatement
+          / expression (SEMI / LN);
+ifStatement = IF LPAREN expression RPAREN statement (ELSE ^ statement)?;
+bounded expression = comparative (EQ expression)?;
+comparative = additive( EQEQ additive
+                      / NOTEQEQ additive
+                      / GTE additive
+                      / LTE additive
+                      / GT additive
+                      / LT additive
+                      )*;
+additive  = multitive (PLUS multitive / MINUS multitive)*;
+multitive = primary (ASTER primary / SLASH primary)*;
+primary = LPAREN expression RPAREN_S / STRING 
+        / IDENT LPAREN bounded{(expression (COMMA expression)*)?} RPAREN_S
+        / IDENT_S / NUMBER;
+KEYWORD = ("print" / "if" / "else" / "fun" / "var") !([a-zA-Z0-9_$]);
+S = (" " / "\t" / "\r" / "\n")* ;
+ST = (" " / "\t")* ;
+LN = ("\r\n" / "\r" / "\n") S;
+FUN = $key("fun");
+bounded PRINT = $key("print");
+bounded IF = $key("if");
+bounded ELSE = $key("else");
+bounded VAR = $key("var");
+STRING = $special("\"" ("#{" expression "}" / "\\" ["\\nrtbf'] / [^"\\\n\r])* "\"");
+COMMA = $sep(",");
+bounded SEMI = $sep(";");
+bounded LB = $sep("{");
+bounded RB = $sep("}");
+LPAREN = $sep("(");
+RPAREN = $sep(")");
+bounded RPAREN_S = $special(")");
+EQ = $sep("=");
+PLUS = $sep("+");
+MINUS = $sep("-");
+ASTER = $sep("*");
+SLASH = $sep("/");
+LT = $sep("<");
+GT = $sep(">");
+LTE = $sep("<=");
+GTE = $sep(">=");
+EQEQ = $sep("==");
+NOTEQEQ = $sep("=");
+NUMBER = $special([0-9]+);
+bounded IDENT = $sep(!(KEYWORD) [a-zA-Z_][a-zA-Z0-9_]*);
+bounded IDENT_S = $special(!(KEYWORD) [a-zA-Z_][a-zA-Z0-9_]*);
+EOT = !_;

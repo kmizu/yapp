@@ -1,0 +1,310 @@
+options {
+	STATIC = false;
+}
+
+PARSER_BEGIN(YappParser)
+package jp.gr.java_conf.mizu.yapp.parser;
+import java.util.*;
+import jp.gr.java_conf.mizu.yapp.*;
+import jp.gr.java_conf.mizu.yapp.parser.*;
+import static jp.gr.java_conf.mizu.yapp.Ast.*;
+
+public class YappParser {
+  private static Symbol $(String key){
+    return Symbol.intern(key);
+  }
+  private static Position pos(Token t){
+  	return new Position(t.beginLine, t.beginColumn);
+  }
+  private static Position pos(int line, int column) {
+  	return new Position(line, column);
+  }
+  private static <T> List<T> list(T... ts){
+    List<T> lst = new ArrayList<T>();
+    for(T t : ts) lst.add(t);
+    return lst;
+  }
+  private static String content(String s){
+    return s.substring(1, s.length() - 1);
+  }
+  private static String action(String s){
+    return s.substring(2, s.length() - 2);
+  }
+  private static String e_action(String s){
+    return s.substring(2, s.length() - 1);  
+  }
+  private static String unescape(String s){
+  	s = content(s);
+    StringBuffer sb = new StringBuffer();
+    for(int i = 0; i < s.length(); i++){
+      char ch = s.charAt(i);
+      if(ch != '\\'){
+      	sb.append(ch);
+      	continue;
+      }
+      i++;
+      ch = s.charAt(i);
+      switch(ch){
+      case 'n':
+      	sb.append('\n');
+      	break;
+      case 't':
+        sb.append('\t');
+        break;
+      case 'b':
+        sb.append('\b');
+        break;
+      case 'r':
+        sb.append('\r');
+        break;
+      case 'f':
+        sb.append('\f');
+        break;
+      case '\'':
+      	sb.append('\'');
+      case '\\':
+        sb.append('\\');
+        break;
+      default:
+        sb.append(ch);
+        break;
+      }
+    }
+    return new String(sb);
+  }
+  
+  private static CharClass parseCharClass(Position pos, String text, Symbol var)
+    throws ParseException {
+  	boolean positive = true;
+    int start = 0;
+    if(text.length() != 0 && text.charAt(0) == '^'){
+      positive = false;
+      start++;
+    }
+    List<CharClass.Element> elements = new ArrayList<CharClass.Element>();
+    for(int i = start; i < text.length(); i++){
+      if(i < text.length() - 2 && text.charAt(i + 1) == '-'){
+        char rangeS = text.charAt(i);
+        char rangeE = text.charAt(i + 2);
+        if(rangeS > rangeE){
+          throw new ParseException(
+            pos.getLine() + ": range start must be < range end"
+          );
+        }
+        elements.add(new CharClass.Range(rangeS, rangeE));
+        i += 2;
+      }else{
+      	elements.add(new CharClass.Char(text.charAt(i)));
+      }
+    }
+    return new CharClass(pos, positive, elements, var);
+  }
+}
+PARSER_END(YappParser)
+
+SKIP: {
+  " "
+| "\t"
+| "\r"
+| "\n"
+}
+
+SPECIAL_TOKEN:
+{
+  <MULTI_LINE_COMMENT: "/*" (~["*"])*  "*" ("*" | (~["*", "/"] (~["*"])* "*"))* "/">
+| <LINE_COMMENT:       "//" (~["\r", "\n"])*>
+}
+
+TOKEN: {
+  <GRAMMAR:     "grammar">
+| <FAIL:        "fail">
+| <BOUNDED:     "bounded">
+| <MACRO:       "macro">
+| <ANY:         "." | "_">
+| <LARROW:      "<-">
+| <EQUAL:       "=">
+| <AND:         "&">
+| <NOT:         "!">
+| <QUESTION:    "?">
+| <COLON:       ":">
+| <BAR:         "|">
+| <SLASH:       "/">
+| <STAR:        "*">
+| <PLUS:        "+">
+| <EMPTY:       "()">
+| <LPAREN:      "(">
+| <RPAREN:      ")">
+| <LBRACE:      "{">
+| <RBRACE:      "}">
+| <CUT:         "^">
+| <COMMA:       ",">
+| <SEMI_COLON:  ";">
+| <MACRO_PARAM:
+    "#" ["a"-"z","A"-"Z","_"](["a"-"z","A"-"Z","_","0"-"9"])*
+  >
+| <MACRO_NAME:
+    "$" ["a"-"z","A"-"Z","_"](["a"-"z","A"-"Z","_","0"-"9"])*
+  >
+| <ID:
+    ["a"-"z","A"-"Z","_"](["a"-"z","A"-"Z","_","0"-"9"])*
+  >
+| <CHAR_CLASS:
+    "["
+    ( (~["]","\\","\n","\r"])
+    | ("\\" ["[","]","\\","n","r","t","b","f","-"])
+    )*
+    "]"
+  >
+| <CODE:
+    "<["
+    (  "]" (~[">"])
+    | (~["\\", "]"])
+    | "\\" ("\\" | ">" | "]")
+    )*
+    "]>"
+  >
+| <EXP_CODE:
+    "%{"
+    ( (~["}", "\\"])
+    | "\\" ("\\" | "}")
+    )*
+    "}"
+  | "${"
+    ( (~["}", "\\"])
+    | "\\" ("\\" | "}")
+    )*
+    "}"
+  >
+| <PREDICATE:
+    "&{"
+    ( (~["}", "#"])
+    | "\\" ("\\" | "}")
+    )*
+    "}"
+  >
+| <STRING:
+    "\""
+    ( (~["\"","\\","\n","\r"])
+    | ("\\"
+        ( ["\"","\\","n","r","t","b","f","'"]
+        | ["0"-"7"] ( ["0"-"7"] )?
+        | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+        )
+      )
+    )*
+    "\""
+  | "'"
+    ( (~["\'","\\","\n","\r"])
+    | ("\\"
+        ( ["\"","\\","n","r","t","b","f","'"]
+        | ["0"-"7"] ( ["0"-"7"] )?
+        | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+        )
+      )
+    )*
+    "'"  
+  >
+}
+
+Grammar parse() :{Grammar g;}{
+  g=grammar(){return g;}
+}
+
+Grammar grammar() :{
+  Token t = null, n = null; 
+  List<Rule> rs = new ArrayList<Rule>(); Rule r;
+  List<MacroDefinition> ms = new ArrayList<MacroDefinition>(); MacroDefinition m;
+} {
+  [t=<GRAMMAR> n=<ID> <SEMI_COLON>] 
+  (m=macro() {ms.add(m);})*
+  (LOOKAHEAD(2) r=rule(false) {rs.add(r);} | <BOUNDED> <LBRACE> (r=rule(true) {rs.add(r);})+ <RBRACE>)* <EOF> {
+  	Position p;
+  	Symbol s;
+  	if(t != null) {
+  	  p = pos(t);
+  	  s = $(n.image);
+  	}else{
+  	  p = pos(1, 1);
+  	  s = null;
+  	}
+  	return new Grammar(p, s, ms, rs);
+  }
+}
+
+MacroDefinition macro() :{
+  Token t = null, n = null, k = null; List<Symbol> params = new ArrayList<Symbol>();
+  Expression e;
+} {
+  t=<MACRO> n=<MACRO_NAME> <LPAREN> [k=<MACRO_PARAM> {params.add($(k.image));} (<COMMA> k=<MACRO_PARAM> {params.add($(k.image));})*] <RPAREN> <EQUAL> e=expression() <SEMI_COLON>
+  {return new MacroDefinition(pos(t), $(n.image), params, e);}
+}
+
+Rule rule(boolean bounded) :{Token t, n, d; String s = null, code = null; Expression e;} {
+(<BOUNDED> {bounded = true;})?
+( LOOKAHEAD(2) t=<ID> [d=<CODE> {code = action(d.image);}] 
+  (<EQUAL> | <LARROW>) e=expression() <SEMI_COLON>
+| n=<ID> {s = n.image;} t=<ID> [d=<CODE> {code = action(d.image);}] 
+  (<EQUAL> | <LARROW>) e=expression() <SEMI_COLON>
+) {return new Rule(pos(t), bounded ? 1 : 0, $(t.image), $(s), e, code);}
+}
+
+Expression expression() :{Expression e;} {
+  e=alt() {return e;}
+}
+
+Expression alt() :{Token t; Expression e1, e2; List<Expression> es = list();} {
+  e1=seq() {es.add(e1);} (
+    t=<BAR>   e2=seq() {es.add(e2);}
+  | t=<SLASH> e2=seq() {es.add(e2);}
+  )*
+  {return es.size() == 1 ? e1 : new N_Alternation(e1.pos(), es);}
+}
+
+Expression seq() :{Expression e1, e2; List<Expression> es = list();} {
+  e1=act() {es.add(e1);} (e2=act() {es.add(e2);})*
+  {return es.size() == 1 ? e1 : new N_Sequence(e1.pos(), es);}
+}
+
+Expression act() :{Token t; Expression e;}{
+  e=prd()
+  (t=<CODE>     {e = new Action(pos(t), e, action(t.image));}
+  |t=<EXP_CODE> {e = new SetValueAction(pos(t), e, e_action(t.image));}
+  )*
+  {return e;}
+}
+
+Expression prd() :{Token t; Expression e;}{
+  t=<AND> e=rep() {return new AndPredicate(pos(t), e);}
+| t=<NOT> e=rep() {return new NotPredicate(pos(t), e);}
+| e=rep()         {return e;}
+}
+
+Expression rep() :{Token t; Expression e;} {
+  e=mac()
+  [ t=<STAR>     {e = new Repetition(pos(t), e);}
+  | t=<PLUS>     {e = new RepetitionPlus(pos(t), e);}
+  | t=<QUESTION> {e = new Optional(pos(t), e);}
+  ]
+  {return e;}
+}
+
+Expression mac() :{Token t; Expression e; List<Expression> params = new ArrayList<Expression>();} {
+  LOOKAHEAD(2) t=<MACRO_NAME> <LPAREN> [e=expression() {params.add(e);} (<COMMA> e=expression() {params.add(e);})*] <RPAREN> {return new MacroCall(pos(t), $(t.image), params);}
+| e=prim() {return e;}
+}
+
+Expression prim() :{Token t, n; Symbol v = null; Expression e;} {
+  [LOOKAHEAD(2) n=<ID> <COLON> {v = $(n.image);}]
+  ( t=<ID>                                      {return new NonTerminal(pos(t), $(t.image), v);}
+  | t=<MACRO_PARAM>                             {return new MacroVariable(pos(t), $(t.image), v);}
+  | t=<STRING>                                  {return new StringLiteral(pos(t), content(t.image), v);}
+  | t=<CHAR_CLASS>                              {return parseCharClass(pos(t), unescape(t.image), v);}
+  | t=<ANY>                                     {return new Wildcard(pos(t), v);}
+  )
+| t=<FAIL>                                      {return new Fail(pos(t));}
+| t=<PREDICATE>                                 {return new SemanticPredicate(pos(t), e_action(t.image));}
+| t=<CUT>                                       {return new Cut(pos(t));}
+| t=<EMPTY>                                     {return new Empty(pos(t));}
+| t=<BOUNDED> <LBRACE> e=expression() <RBRACE>  {return new BoundedExpression(e);}
+| <LPAREN> e=expression() <RPAREN>              {return e;}
+}

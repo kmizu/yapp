@@ -1,0 +1,38 @@
+Document       = prolog Element Misc* EOT ;
+XMLDecl 	     = "<?xml" VersionInfo EncodingDecl? S? "?>" ;
+VersionInfo 	 = S "version" Eq ("'" VersionNum "'" 
+                 / "\"" VersionNum "\""
+                 ) ;
+prolog 	       = XMLDecl? Misc* ;
+Eq             = S? "=" S? ;
+  bounded VersionNum 	   = ([a-zA-Z0-9_.:] / "-")+ ;
+  bounded Misc 	         = COMMENT / S ;
+  EncodingDecl 	 = S "encoding" Eq ("'" EncName "'" 
+                 / "\"" EncName "\"") ;
+  bounded EncName 	     = [A-Za-z] ([A-Za-z0-9._] / "-")* ;
+  bounded S      = (" " / "\t" / "\r" / "\n")+ ;
+  
+  LETTER         = [a-zA-Z] ;
+  DIGIT          = [0-9] ;
+  NAME_CHAR      = LETTER / DIGIT / "." / "-" / "_" / ":" ;
+  bounded NAME           = (LETTER / "_" / ":") NAME_CHAR* ;
+  bounded ENTITY_REF     = "&" NAME ";" ;
+  bounded CHAR_REF 	     = "&#x" [0-9a-fA-F]+ ";" / "&#" [0-9]+ ";" ;
+  REFERENCE 	   = 	ENTITY_REF / CHAR_REF ;
+  EOT            = !_ ;
+
+  bounded ATT_VALUE 	   = "\"" ([^<&"] / REFERENCE)* "\""
+			           / "'"  ([^<&'] / REFERENCE)* "'" ;
+  CHAR_DATA 	   = ([^<&])+ ;
+  Attribute      = NAME S? "=" S? ATT_VALUE ;
+COMMENT 	     = "<!--" ([^-] / "-" [^-])* "-->" ;
+Element        = "<" NAME (S Attribute)* S? (
+                   ">" ^ Content  "</" NAME S? ">" 
+                 / "/>"
+                 ) ;
+Content        = (!("</") ^ ( &("<!--") ^ COMMENT
+                            / &("<") ^ Element
+                            / REFERENCE
+                            / CHAR_DATA
+                            )
+                 )* ;

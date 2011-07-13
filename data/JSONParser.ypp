@@ -1,0 +1,32 @@
+macro $sep(#K) = #K S;
+
+JSON = S Object EOT;
+Object = LBRACE RBRACE / LBRACE Members RBRACE;
+Members = Pair (COMMA Pair)* ;
+Pair = String COLON Value ;
+Array = LBRACKET RBRACKET / LBRACKET Elements RBRACKET ;
+Elements = Value (COMMA Value)* ;
+Value = String / Number / Object / Array / TRUE / FALSE / NULL ;
+
+CHAR = (!(["\\]) _) / "\\" [\\"/bfnrt] / "u" HEX HEX HEX HEX ;
+HEX = [0-9a-fA-F] ;
+INT = ("-")? ([1-9] [0-9]* / "0") ;
+FRAC = "." [0-9]+ ;
+EXP = E [0-9]+ ;
+E = "e+" / "e-" / "E+" / "E-" / "e" / "E" ;
+String = $sep("\"\"" / "\"" CHAR+ "\"");
+Number = $sep(INT FRAC EXP / INT EXP / INT FRAC / INT);
+TRUE = $sep("true") ;
+FALSE = $sep("false");
+NULL = $sep("null");
+COMMA = $sep(",");
+COLON = $sep(":");
+LBRACE = $sep("{");
+RBRACE = $sep("}");
+LBRACKET = $sep("[");
+RBRACKET = $sep("]");
+S = ( [ \f\t\r\n]+
+    / "/*" (!"*/" _)* "*/"
+    / "//" (![\r\n] _)* [\r\n]
+    )* ;
+EOT = !_ ;

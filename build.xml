@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="yapp" default="compile" basedir=".">
+  <property environment="env"/>
+  <property name="src"               value="src/main/java"/>
+  <property name="bin"               value="bin"/>
+  <property name="grammar"           value="grammar"/>
+  <property name="docs"              value="docs"/>
+  <property name="build"             value="build"/>
+  <property name="build.test"        value="build.test"/>
+  <property name="build.benchmark"   value="build.benchmark"/>
+  <property name="parser"            value="${src}/jp/gr/java_conf/mizu/yapp/parser"/>
+  <property name="parser.esll"       value="${src}/jp/gr/java_conf/mizu/esll/parser"/>
+  <property name="example"           value="example"/>
+  <property name="data"              value="data"/>
+  <property name="jar.name"          value="yapp.jar"/>
+  <property name="resources"         value="resources"/>
+  <property name="package.esll"      value="jp.gr.java_conf.mizu.esll"/>
+  <property name="yapp"              value="jp.gr.java_conf.mizu.yapp.tools.YappMain"/>
+  <property file="build.properties"/>
+	
+  <macrodef name="yapp" description="run yapp(Yet Another Packrat Parser Generator)">
+    <attribute name="file"/>
+    <attribute name="package"/>
+    <attribute name="destdir"/>
+    <attribute name="options"/>
+    <sequential>
+      <java classname="${yapp}" fork="true">
+        <jvmarg line="-Xms256m -Xmx256m"/>
+        <arg line="--pkg @{package} @{options} @{file} @{destdir}"/>
+        <classpath path="build"/>
+      </java>
+    </sequential>
+  </macrodef>
+		
+  <fileset id="shared" dir=".">
+    <include name="${bin}/**"/>
+    <include name="${docs}/**"/>
+    <include name="${example}/**"/>
+    <include name="Install.txt"/>
+    <include name="Readme.txt"/>
+    <include name="license.txt"/>
+  </fileset>
+
+  <target name="grammar">
+    <mkdir dir="${parser}"/>
+  	<mkdir dir="${parser.esll}"/>
+    <javacc
+      target="${grammar}/YappParser.jj"
+      unicodeinput="true"
+      javaunicodeescape="true"
+      outputdirectory="${parser}"
+      javacchome="${javacc.home}"/>
+  	<copy file="${grammar}/BackupCharStream.java" tofile="${parser.esll}/BackupCharStream.java"/>
+  	<javacc
+  	  target="${grammar}/ESLLParserByJavaCC.jj"
+  	  unicodeinput="true"
+  	  javaunicodeescape="true"
+  	  outputdirectory="${parser.esll}"
+  	  javacchome="${javacc.home}"/>
+  </target>
+
+  <target name="compile" depends="grammar">
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" source="1.5" debug="false"/>
+  </target>
+	
+  <target name="jar" depends="compile">
+    <jar destfile="${jar.name}" basedir="${build}">
+      <manifest>
+        <attribute name="Main-Class" value="${yapp}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}" includes="**"/>
+  	<delete dir="${parser.esll}"/>
+    <delete dir="${parser}" />
+  </target>
+</project>
