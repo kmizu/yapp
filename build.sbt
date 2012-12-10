@@ -1,6 +1,6 @@
 organization := "com.github.kmizu"
 
-name := "syapp"
+name := "yapp"
 
 version := "0.2.0"
 
