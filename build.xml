@@ -15,8 +15,8 @@
   <property name="data"              value="data"/>
   <property name="jar.name"          value="yapp.jar"/>
   <property name="resources"         value="resources"/>
-  <property name="package.esll"      value="jp.gr.java_conf.mizu.esll"/>
-  <property name="yapp"              value="jp.gr.java_conf.mizu.yapp.tools.YappMain"/>
+  <property name="package.esll"      value="com.github.kmizu.esll"/>
+  <property name="yapp"              value="com.github.kmizu.yapp.tools.YappMain"/>
   <property file="build.properties"/>
 	
   <macrodef name="yapp" description="run yapp(Yet Another Packrat Parser Generator)">

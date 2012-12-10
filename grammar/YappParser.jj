@@ -3,11 +3,11 @@ options {
 }
 
 PARSER_BEGIN(YappParser)
-package jp.gr.java_conf.mizu.yapp.parser;
+package com.github.kmizu.yapp.parser;
 import java.util.*;
-import jp.gr.java_conf.mizu.yapp.*;
-import jp.gr.java_conf.mizu.yapp.parser.*;
-import static jp.gr.java_conf.mizu.yapp.Ast.*;
+import com.github.kmizu.yapp.*;
+import com.github.kmizu.yapp.parser.*;
+import static com.github.kmizu.yapp.Ast.*;
 
 public class YappParser {
   private static Symbol $(String key){

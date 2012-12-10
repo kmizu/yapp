@@ -5,11 +5,11 @@ options{
 }
 
 PARSER_BEGIN(ESLLParserByJavaCC)
-package jp.gr.java_conf.mizu.esll.parser;
-import jp.gr.java_conf.mizu.esll.*;
+package com.github.kmizu.esll.parser;
+import com.github.kmizu.esll.*;
 import java.util.*;
 import java.io.*;
-import static jp.gr.java_conf.mizu.esll.Ast.*;
+import static com.github.kmizu.esll.Ast.*;
 public class ESLLParserByJavaCC {
   public static void main(String[] args)throws Exception {
     ESLLParserByJavaCC parser = new ESLLParserByJavaCC(
