@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.kmizu.yapp.util.SystemProperties;
-
 /**
  * This class holds node classes of AST of Yapp.
  * This class is used only for namespace.
