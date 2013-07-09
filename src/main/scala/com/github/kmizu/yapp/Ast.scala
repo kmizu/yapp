@@ -18,31 +18,20 @@ import java.util.List
  */
 object Ast {
 
-  class Action(pos: Position, val body: Ast.Expression, val code: String) extends Expression(pos) {
+  case class Action(override val pos: Position, body: Ast.Expression, code: String) extends Expression(pos) {
 
-    override def toString: String = {
-      return body + " <[" + code + "]>"
-    }
+    override def toString: String =  body + " <[" + code + "]>"
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var body: Ast.Expression = null
-    private var code: String = null
   }
 
-  class BoundedExpression(val body: Ast.Expression) extends Expression(body.pos) {
+  case class BoundedExpression(body: Ast.Expression) extends Expression(body.pos) {
 
     override def toString: String = {
-      return "bounded{" + body + "}"
+      "bounded{" + body + "}"
     }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept(visitor: Ast.Visitor[R, C], context: C): R = visitor.visit(this, context)
 
-    private var body: Ast.Expression = null
   }
 
   class SetValueAction extends Expression {
@@ -228,152 +217,50 @@ object Ast {
     private final val rules: List[Ast.Rule] = null
   }
 
-  abstract class Node {
-    def this(pos: Position) {
-      this()
-      this.pos = pos
-    }
+  abstract class Node(val pos: Position)
 
-    def pos: Position = {
-      return pos
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R
-
-    private var pos: Position = null
-  }
-
-  class NonTerminal extends Expression {
-    def this(pos: Position, name: Symbol, `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.`var` = `var`
-    }
+  case class NonTerminal(override val pos: Position, name: Symbol, `var`: Symbol) extends Expression(pos) {
 
     def this(pos: Position, name: Symbol) {
-      this()
-      `this`(pos, name, null)
+      this(pos, name, null)
     }
 
-    def name: Symbol = {
-      return name
+    override def toString: String = {
+      if (`var` != null) `var` + ":" + name.toString else name.toString
     }
 
-    def `var`: Symbol = {
-      return `var`
-    }
+  }
+
+  case class MacroVariable(override val pos: Position, name: Symbol, `var`: Symbol) extends Expression(pos) {
 
     override def toString: String = {
       return if (`var` != null) `var` + ":" + name.toString else name.toString
     }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var name: Symbol = null
-    private var `var`: Symbol = null
   }
 
-  class MacroVariable extends Expression {
-    def this(pos: Position, name: Symbol, `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.`var` = `var`
-    }
-
-    def name: Symbol = {
-      return name
-    }
-
-    def `var`: Symbol = {
-      return `var`
-    }
-
-    override def toString: String = {
-      return if (`var` != null) `var` + ":" + name.toString else name.toString
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private final val name: Symbol = null
-    private final val `var`: Symbol = null
-  }
-
-  class MacroCall extends Expression {
-    def this(pos: Position, name: Symbol, params: List[Ast.Expression]) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.params = params
-    }
-
-    def name: Symbol = {
-      return name
-    }
-
-    def params: List[Ast.Expression] = {
-      return params
-    }
+  case class MacroCall (override val pos: Position, name: Symbol, params: List[Ast.Expression]) extends Expression(pos) {
 
     override def toString: String = {
       return name + "(" + params + ")"
     }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private final val name: Symbol = null
-    private final val params: List[Ast.Expression] = null
   }
 
-  class NotPredicate extends Expression {
-    def this(pos: Position, body: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.body = body
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
+  case class NotPredicate(override val pos: Position, body: Ast.Expression) extends Expression(pos) {
 
     override def toString: String = {
       return "!(" + body + ")"
     }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var body: Ast.Expression = null
   }
 
-  class AndPredicate extends Expression {
-    def this(pos: Position, expr: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.body = expr
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
+  case class AndPredicate (override val pos: Position, expr: Ast.Expression) extends Expression(pos) {
 
     override def toString: String = {
       return "&(" + body + ")"
     }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var body: Ast.Expression = null
   }
 
   class SemanticPredicate extends Expression {
@@ -757,219 +644,6 @@ object Ast {
     }
 
     protected var body: List[Ast.Expression] = null
-  }
-
-  class Visitor {
-    protected def visit(node: Ast.Empty, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Action, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.SetValueAction, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.N_Alternation, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Cut, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Fail, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.SemanticPredicate, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.AndPredicate, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.NotPredicate, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Grammar, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.NonTerminal, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.MacroCall, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.MacroVariable, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Repetition, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.RepetitionPlus, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Optional, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Rule, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.MacroDefinition, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.N_Sequence, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.StringLiteral, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.CharClass, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.Wildcard, context: C): R = {
-      return null
-    }
-
-    protected def visit(node: Ast.BoundedExpression, context: C): R = {
-      return node.body.accept(this, context)
-    }
-
-    /**
-     * using this method, node.accept(this, context) can be written to
-     * accept(node, context).
-     * @param node
-     * @param context
-     * @return
-     */
-    protected final def accept(node: Ast.Node, context: C): R = {
-      return node.accept(this, context)
-    }
-  }
-
-  class DepthFirstVisitor extends Visitor[Void, C] {
-    protected override def visit(node: Ast.Action, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.AndPredicate, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.CharClass, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.Cut, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.Empty, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.Fail, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.Grammar, context: C): Void = {
-      import scala.collection.JavaConversions._
-      for (r <- node) {
-        r.body.accept(this, context)
-      }
-      return null
-    }
-
-    protected override def visit(node: Ast.N_Alternation, context: C): Void = {
-      import scala.collection.JavaConversions._
-      for (e <- node) {
-        e.accept(this, context)
-      }
-      return null
-    }
-
-    protected override def visit(node: Ast.N_Sequence, context: C): Void = {
-      import scala.collection.JavaConversions._
-      for (e <- node) {
-        e.accept(this, context)
-      }
-      return null
-    }
-
-    protected override def visit(node: Ast.NonTerminal, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.MacroVariable, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.MacroCall, context: C): Void = {
-      import scala.collection.JavaConversions._
-      for (param <- node.params) param.accept(this, context)
-      return null
-    }
-
-    protected override def visit(node: Ast.NotPredicate, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.Optional, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.Repetition, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.RepetitionPlus, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.BoundedExpression, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.Rule, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.MacroDefinition, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.SemanticPredicate, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.SetValueAction, context: C): Void = {
-      return node.body.accept(this, context)
-    }
-
-    protected override def visit(node: Ast.StringLiteral, context: C): Void = {
-      return null
-    }
-
-    protected override def visit(node: Ast.Wildcard, context: C): Void = {
-      return null
-    }
   }
 
 }
