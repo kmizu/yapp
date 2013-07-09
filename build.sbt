@@ -47,7 +47,7 @@ pomExtra := (
     </license>
   </licenses>
   <scm>
-    <url>git@github.com:kmizu/syapp.git</url>
+    <url>git@github.com:kmizu/yapp.git</url>
     <connection>scm:git:git@github.com:kmizu/syapp.git</connection>
   </scm>
   <developers>
