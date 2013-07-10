@@ -7,9 +7,11 @@
  * ************************************************************** */
 package com.github.kmizu.yapp
 
+import com.github.kmizu.yapp.util.SystemProperties
 import java.util.Collections
 import java.util.Iterator
 import java.util.List
+import scala.beans.BeanProperty
 
 /**
  * This class holds node classes of AST of Yapp.
@@ -18,58 +20,27 @@ import java.util.List
  */
 object Ast {
 
-  case class Action(override val pos: Position, body: Ast.Expression, code: String) extends Expression(pos) {
-
+  case class Action(override val pos: Position, body: Ast.Expression, code: String) extends Expression {
     override def toString: String =  body + " <[" + code + "]>"
-
   }
 
-  case class BoundedExpression(body: Ast.Expression) extends Expression(body.pos) {
+  case class BoundedExpression(body: Ast.Expression) extends Expression {
+    val pos: Position = body.pos
 
     override def toString: String = {
       "bounded{" + body + "}"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = visitor.visit(this, context)
-
   }
 
-  class SetValueAction extends Expression {
-    def this(pos: Position, body: Ast.Expression, code: String) {
-      this()
-      `super`(pos)
-      this.body = body
-      this.code = code
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
-
-    def code: String = {
-      return code
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
+  case class SetValueAction(pos: Position, body: Ast.Expression, code: String) extends Expression {
     override def toString: String = {
       return body + " %{" + code + "}"
     }
-
-    private var body: Ast.Expression = null
-    private var code: String = null
   }
 
-  class N_Alternation extends VarArgExpression {
-    def this(pos: Position, expressions: List[Ast.Expression]) {
-      this()
-      `super`(pos, expressions)
-    }
-
+  case class N_Alternation(pos: Position, body: List[Ast.Expression])  extends VarArgExpression {
     override def toString: String = {
-      val buf: StringBuffer = new StringBuffer
+      val buf = new StringBuffer
       buf.append("(")
       buf.append(body.get(0).toString)
       import scala.collection.JavaConversions._
@@ -78,125 +49,46 @@ object Ast {
         buf.append(e.toString)
       }
       buf.append(")")
-      return new String(buf)
-    }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
+      new String(buf)
     }
   }
 
   abstract class BinaryExpression extends Expression {
-    def this(pos: Position, lhs: Ast.Expression, rhs: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.lhs = lhs
-      this.rhs = rhs
-    }
-
-    def lhs: Ast.Expression = {
-      return lhs
-    }
-
-    def rhs: Ast.Expression = {
-      return rhs
-    }
-
-    private var lhs: Ast.Expression = null
-    private var rhs: Ast.Expression = null
+    def lhs: Ast.Expression
+    def rhs: Ast.Expression
   }
 
-  class Cut extends Expression {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
+  case class Cut(pos: Position) extends Expression {
     override def toString: String = {
       return "^"
     }
   }
 
-  class Fail extends Expression {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
+  case class Fail(pos: Position) extends Expression {
     override def toString: String = {
       return "fail"
     }
   }
 
-  class Empty extends Terminal {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class Empty(pos: Position) extends Terminal {
     override def toString: String = {
       return "()"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
   }
 
-  abstract class Expression extends Node {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-  }
+  abstract class Expression extends Node
 
-  abstract class Terminal extends Expression {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-  }
+  abstract class Terminal extends Expression
 
-  class Grammar extends Node with Iterable[Ast.Rule] {
-    def this(pos: Position, name: Symbol, macros: List[Ast.MacroDefinition], rules: List[Ast.Rule]) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.macros = macros
-      this.rules = rules
-    }
+  case class Grammar(pos: Position, @BeanProperty var name: Symbol, macros: List[Ast.MacroDefinition], rules: List[Ast.Rule]) extends Node with Iterable[Ast.Rule] {
+    def iterator: Iterator[Ast.Rule] = rules.iterator
 
-    def iterator: Iterator[Ast.Rule] = {
-      return rules.iterator
-    }
-
-    def name: Symbol = {
-      return name
-    }
-
-    def setName(name: Symbol) {
+    def setName(name: Symbol): Unit = {
       this.name = name
     }
 
-    def macros: List[Ast.MacroDefinition] = {
-      return macros
-    }
-
-    def getRules: List[Ast.Rule] = {
-      return rules
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def getRules: List[Ast.Rule] = rules
 
     override def toString: String = {
       val buf: StringBuffer = new StringBuffer
@@ -209,18 +101,15 @@ object Ast {
         buf.append(SystemProperties.LINE_SEPARATOR)
         buf.append(SystemProperties.LINE_SEPARATOR)
       }
-      return new String(buf)
+      new String(buf)
     }
-
-    private var name: Symbol = null
-    private final val macros: List[Ast.MacroDefinition] = null
-    private final val rules: List[Ast.Rule] = null
   }
 
-  abstract class Node(val pos: Position)
+  abstract class Node {
+    def pos: Position
+  }
 
-  case class NonTerminal(override val pos: Position, name: Symbol, `var`: Symbol) extends Expression(pos) {
-
+  case class NonTerminal(pos: Position, name: Symbol, `var`: Symbol) extends Expression {
     def this(pos: Position, name: Symbol) {
       this(pos, name, null)
     }
@@ -228,152 +117,60 @@ object Ast {
     override def toString: String = {
       if (`var` != null) `var` + ":" + name.toString else name.toString
     }
-
   }
 
-  case class MacroVariable(override val pos: Position, name: Symbol, `var`: Symbol) extends Expression(pos) {
-
+  case class MacroVariable(pos: Position, name: Symbol, `var`: Symbol) extends Expression {
     override def toString: String = {
-      return if (`var` != null) `var` + ":" + name.toString else name.toString
+      if (`var` != null) `var` + ":" + name.toString else name.toString
     }
-
   }
 
-  case class MacroCall (override val pos: Position, name: Symbol, params: List[Ast.Expression]) extends Expression(pos) {
-
+  case class MacroCall(pos: Position, name: Symbol, params: List[Ast.Expression]) extends Expression {
     override def toString: String = {
       return name + "(" + params + ")"
     }
-
   }
 
-  case class NotPredicate(override val pos: Position, body: Ast.Expression) extends Expression(pos) {
-
+  case class NotPredicate(pos: Position, body: Ast.Expression) extends Expression {
     override def toString: String = {
       return "!(" + body + ")"
     }
-
   }
 
-  case class AndPredicate (override val pos: Position, expr: Ast.Expression) extends Expression(pos) {
-
+  case class AndPredicate (pos: Position, body: Ast.Expression) extends Expression {
     override def toString: String = {
       return "&(" + body + ")"
     }
-
   }
 
-  class SemanticPredicate extends Expression {
-    def this(pos: Position, expression: String) {
-      this()
-      `super`(pos)
-      this.predicate = expression
-    }
-
-    def predicate: String = {
-      return predicate
-    }
-
+  case class SemanticPredicate(pos: Position, predicate: String) extends Expression {
     override def toString: String = {
       return "&{" + predicate + "}"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var predicate: String = null
   }
 
-  class Repetition extends Expression {
-    def this(pos: Position, expr: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.body = expr
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
-
+  case class Repetition(pos: Position, body: Ast.Expression) extends Expression {
     override def toString: String = {
       return "(" + body + ")*"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var body: Ast.Expression = null
   }
 
-  class RepetitionPlus extends Expression {
-    def this(pos: Position, body: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.body = body
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
-
+  case class RepetitionPlus(pos: Position, body: Ast.Expression) extends Expression {
     override def toString: String = {
       return "(" + body + ")+"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var body: Ast.Expression = null
   }
 
-  class Optional extends Expression {
-    def this(pos: Position, expr: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.body = expr
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
-
+  case class Optional(pos: Position, body: Ast.Expression) extends Expression {
     override def toString: String = {
       return "(" + body + ")?"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var body: Ast.Expression = null
   }
 
-  class MacroDefinition extends Node {
-    def this(pos: Position, name: Symbol, formalParams: List[Symbol], body: Ast.Expression) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.formalParams = formalParams
-      this.body = body
-    }
-
-    def name: Symbol = {
-      return name
-    }
-
-    def formalParams: List[Symbol] = {
-      return formalParams
-    }
-
-    def body: Ast.Expression = {
-      return body
-    }
-
+  case class MacroDefinition(pos: Position, name: Symbol, formalParams: List[Symbol], body: Ast.Expression) extends Node {
     override def toString: String = {
-      val builder: StringBuilder = new StringBuilder
+      val builder = new StringBuilder
+
       if (formalParams.size > 0) {
         builder.append(formalParams.get(0))
         import scala.collection.JavaConversions._
@@ -381,74 +178,22 @@ object Ast {
           builder.append(", " + formalParam)
         }
       }
-      return String.format("macro %s(%s) = %s", name, new String(builder), body)
-    }
 
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
+      String.format("macro %s(%s) = %s", name, builder.toString(), body)
     }
-
-    private final val name: Symbol = null
-    private final val formalParams: List[Symbol] = null
-    private final val body: Ast.Expression = null
   }
 
   object Rule {
     final val BOUNDED: Int = 1
   }
 
-  class Rule extends Node {
-    def this(pos: Position, flags: Int, name: Symbol, `type`: Symbol, expression: Ast.Expression, code: String) {
-      this()
-      `super`(pos)
-      this.flags = flags
-      this.name = name
-      this.`type` = `type`
-      this.expression = expression
-      this.code = code
-    }
-
-    def flags: Int = {
-      return flags
-    }
-
-    def name: Symbol = {
-      return name
-    }
-
-    def `type`: Symbol = {
-      return `type`
-    }
-
-    def body: Ast.Expression = {
-      return expression
-    }
-
-    def code: String = {
-      return code
-    }
-
+  case class Rule(pos: Position, flags: Int, name: Symbol, `type`: Symbol, expression: Ast.Expression, code: String) extends Node {
     override def toString: String = {
-      return (if ((flags & BOUNDED) != 0) "bounded " else "") + name + " = " + expression + " ;"
+      return (if ((flags & Rule.BOUNDED) != 0) "bounded " else "") + name + " = " + expression + " ;"
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var flags: Int = 0
-    private var name: Symbol = null
-    private var `type`: Symbol = null
-    private var expression: Ast.Expression = null
-    private var code: String = null
   }
 
-  class N_Sequence extends VarArgExpression {
-    def this(pos: Position, expressions: List[Ast.Expression]) {
-      this()
-      `super`(pos, expressions)
-    }
-
+  case class N_Sequence(pos: Position, body: List[Ast.Expression]) extends VarArgExpression {
     override def toString: String = {
       val buf: StringBuffer = new StringBuffer
       buf.append("(")
@@ -459,112 +204,35 @@ object Ast {
         buf.append(e.toString)
       }
       buf.append(")")
-      return new String(buf)
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
+      new String(buf)
     }
   }
 
-  class StringLiteral extends Terminal {
-    def this(pos: Position, value: String, `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.value = value
-      this.`var` = `var`
-    }
-
+  case class StringLiteral(pos: Position, value: String, `var`: Symbol) extends Terminal {
     def this(pos: Position, value: String) {
-      this()
-      `this`(pos, value, null)
-    }
-
-    def value: String = {
-      return value
-    }
-
-    def `var`: Symbol = {
-      return `var`
+      this(pos, value, null)
     }
 
     override def toString: String = {
       return "\"" + value + "\""
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var value: String = null
-    private var `var`: Symbol = null
   }
 
-  class Wildcard extends Terminal {
-    def this(pos: Position, `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.`var` = `var`
-    }
-
-    def `var`: Symbol = {
-      return `var`
-    }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
+  case class Wildcard(pos: Position, `var`: Symbol) extends Terminal {
     override def toString: String = {
       return "."
     }
-
-    private final val `var`: Symbol = null
   }
 
-  object CharClass {
+  abstract class CharClassNode
 
-    abstract class Element {
-    }
+  case class CharacterElement(value: Char) extends CharClassNode
 
-    class Char extends Element {
-      def this(value: Char) {
-        this()
-        this.value = value
-      }
+  case class Range(start: Char, end: Char) extends CharClassNode
 
-      final val value: Char = 0
-    }
-
-    class Range extends Element {
-      def this(start: Char, end: Char) {
-        this()
-        this.start = start
-        this.end = end
-      }
-
-      final val start: Char = 0
-      final val end: Char = 0
-    }
-
-  }
-
-  class CharClass extends Terminal {
-    def this(pos: Position, positive: Boolean, elements: List[Ast.CharClass#Element]) {
-      this()
-      `this`(pos, positive, elements, null)
-    }
-
-    def this(pos: Position, positive: Boolean, elements: List[Ast.CharClass#Element], `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.positive = positive
-      this.elements = Collections.unmodifiableList(elements)
-      this.`var` = `var`
-    }
-
-    def `var`: Symbol = {
-      return `var`
+  case class CharClass(pos: Position, positive: Boolean, elements: List[Ast.CharClass], `var`: Symbol) extends Terminal {
+    def this(pos: Position, positive: Boolean, elements: List[Ast.CharClass]) {
+      this(pos, positive, Collections.unmodifiableList(elements), null)
     }
 
     override def toString: String = {
@@ -579,54 +247,33 @@ object Ast {
       }
       import scala.collection.JavaConversions._
       for (e <- elements) {
-        if (e.isInstanceOf[Ast.CharClass#Char]) {
-          (e.asInstanceOf[Ast.CharClass#Char]).value match {
+        if (e.isInstanceOf[Ast.CharacterElement]) {
+          (e.asInstanceOf[Ast.CharacterElement]).value match {
             case '\t' =>
               buf.append("\\t")
-              break //todo: break is not supported
             case '\f' =>
               buf.append("\\f")
-              break //todo: break is not supported
             case '\r' =>
               buf.append("\\r")
-              break //todo: break is not supported
             case '\n' =>
               buf.append("\\n")
-              break //todo: break is not supported
             case _ =>
-              buf.append((e.asInstanceOf[Ast.CharClass#Char]).value)
-              break //todo: break is not supported
+              buf.append((e.asInstanceOf[Ast.CharacterElement]).value)
           }
         }
         else {
-          buf.append((e.asInstanceOf[Ast.CharClass#Range]).start)
+          buf.append((e.asInstanceOf[Ast.Range]).start)
           buf.append('-')
-          buf.append((e.asInstanceOf[Ast.CharClass#Range]).end)
+          buf.append((e.asInstanceOf[Ast.Range]).end)
         }
       }
       buf.append(']')
-      return new String(buf)
+      new String(buf)
     }
-
-    def accept(visitor: Ast.Visitor[R, C], context: C): R = {
-      return visitor.visit(this, context)
-    }
-
-    private var `var`: Symbol = null
-    final val positive: Boolean = false
-    final val elements: List[Ast.CharClass#Element] = null
   }
 
   abstract class VarArgExpression extends Expression with Iterable[Ast.Expression] {
-    def this(pos: Position, expressions: List[Ast.Expression]) {
-      this()
-      `super`(pos)
-      this.body = expressions
-    }
-
-    def body: List[Ast.Expression] = {
-      return body
-    }
+    def body: List[Ast.Expression]
 
     def iterator: Iterator[Ast.Expression] = {
       return body.iterator
@@ -642,8 +289,5 @@ object Ast {
       }
       return new String(buf)
     }
-
-    protected var body: List[Ast.Expression] = null
   }
-
 }
