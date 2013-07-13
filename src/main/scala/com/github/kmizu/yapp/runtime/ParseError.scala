@@ -1,38 +1,28 @@
 package com.github.kmizu.yapp.runtime
 
-import java.util.Formatter
+import java.lang.{Integer => JInteger}
+import java.util.{Formatter => JFormatter}
 
-class ParseError {
-  def this(location: Location, message: String) {
-    this()
-    this.location = location
-    this.message = message
-  }
+case class ParseError(location: Location, message: String) {
+  def line: Int = location.getLine
 
-  def getLocation: Location = {
-    return location
-  }
+  def column: Int = location.getColumn
 
-  def getLine: Int = {
-    return location.getLine
-  }
+  def getLocation: Location = this.location
 
-  def getColumn: Int = {
-    return location.getColumn
-  }
+  def getLine: Int = location.getLine
 
-  def getMessage: String = {
-    return message
-  }
+  def getColumn: Int = location.getColumn
+
+  def getMessage: String = message
 
   def getErrorMessage: String = {
-    val builder: StringBuilder = new StringBuilder
-    val f: Formatter = new Formatter(builder)
-    f.format("%d, %d: %s", location.getLine, location.getColumn, message)
-    f.flush
-    return new String(builder)
-  }
+    val builder = new StringBuilder
 
-  private final val location: Location = null
-  private final val message: String = null
+    val formatter = new JFormatter()(builder)
+    formatter.format("%d, %d: %s", new JInteger(line), new JInteger(column), message)
+    formatter.flush
+
+    new String(builder.toString())
+  }
 }

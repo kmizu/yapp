@@ -6,26 +6,20 @@ import java.io.Reader
 import java.io.StringReader
 import java.util.Set
 
-abstract class AbstractPackratParser {
+abstract class AbstractPackratParser[T >: Null](input: Reader) {
+  private[this] var in: Reader = new BufferedReader(input, 20000)
+  private[this] var baseIndex = 0
+  private[this] var nextIndex = 0
+  private[this] var lastLine = 1
+  private[this] var lastColumn = 1
+  private[this] val memo_char = new IntSpreadArray
+  private[this] val memo_location = new CircularSpreadArray[Location]
+
   def this(input: String) {
-    this()
-    `this`(new StringReader(input))
+    this(new StringReader(input))
   }
 
-  def this(in: Reader) {
-    this()
-    this.in = new BufferedReader(in, 20000)
-    this.baseIndex = 0
-    this.nextIndex = 0
-    this.memo_char = new IntSpreadArray
-    this.memo_location = new CircularSpreadArray[Location]
-    this.lastLine = 1
-    this.lastColumn = 1
-  }
-
-  def parse: Result[T] = {
-    return null
-  }
+  def parse: Result[T] = null
 
   /**
    * This method discards memory region for memoization.
@@ -42,77 +36,61 @@ abstract class AbstractPackratParser {
     this.baseIndex = newBaseIndex
   }
 
-  protected final def baseIndex: Int = {
-    return baseIndex
-  }
-
   protected final def realIndex(pos: Int): Int = {
     return pos - baseIndex
   }
 
   protected final def getChar(pos: Int): Int = {
-    var i: Int = 0
-    var ch: Int = -1
-    assert(pos >= baseIndex, "pos must be >= baseIndex")
+    require(pos >= baseIndex, "pos must be >= baseIndex")
+
     if (pos < nextIndex) return memo_char.get(realIndex(pos))
-    try { {
+
+    var i = 0
+    var ch = -1
+    try {
       i = nextIndex
       while (i <= pos) {
-        {
-          ch = in.read
-          val realIndex: Int = realIndex(i)
-          memo_char.set(realIndex, ch)
-          memo_location.set(realIndex, new Location(lastLine, lastColumn))
-          if (ch == '\n') {
-            lastLine += 1
-            lastColumn = 1
-          }
-          else {
-            lastColumn += 1
-          }
+        ch = in.read
+        val rIndex: Int = realIndex(i)
+        memo_char.set(rIndex, ch)
+        memo_location.set(rIndex, new Location(lastLine, lastColumn))
+        if (ch == '\n') {
+          lastLine += 1
+          lastColumn = 1
+        } else {
+          lastColumn += 1
         }
-        ({
-          i += 1; i - 1
-        })
+        i += 1
       }
-    }
-    nextIndex = i
-    return ch
-    }
-    catch {
-      case e: IOException => {
-        throw new RuntimeIOException(e)
-      }
+      nextIndex = i
+      ch
+    } catch {
+      case e: IOException =>  throw new RuntimeIOException(e)
     }
   }
 
-  /**
-   * ��͑Ώۂ̃f�[�^�̃C���f�b�N�Xpos�ɑΉ�����ʒu��Ԃ��܂��B
-   * @param pos �f�[�^�̃C���f�b�N�X
-   * @return �\�[�X�R�[�h��̈ʒu
-   */
   protected final def getLocation(pos: Int): Location = {
     assert(pos >= baseIndex, "pos must be >= baseIndex")
-    return memo_location.get(realIndex(pos))
+    memo_location.get(realIndex(pos))
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def `match`(pos: Int): Result[Character] = {
+  protected final def `match`(pos: Int): Result[Character] = {
     val actual: Int = getChar(pos)
     if (actual >= 0) {
       return new Result[Character](pos + 1, actual.asInstanceOf[Char])
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def `match`(pos: Int, expected: Char): Result[Character] = {
+  protected final def `match`(pos: Int, expected: Char): Result[Character] = {
     val actual: Int = getChar(pos)
     if (actual == expected) {
       return new Result[Character](pos + 1, expected)
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def `match`(pos: Int, expected: Set[Character], not: Boolean): Result[Character] = {
+  protected final def `match`(pos: Int, expected: Set[Character], not: Boolean): Result[Character] = {
     val actual: Int = getChar(pos)
     if (actual >= 0) {
       val contains: Boolean = expected.contains(actual.asInstanceOf[Char])
@@ -120,26 +98,26 @@ abstract class AbstractPackratParser {
         return new Result[Character](pos + 1, actual.asInstanceOf[Char])
       }
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def matchPositive(pos: Int, expected: Set[Character]): Result[Character] = {
+  protected final def matchPositive(pos: Int, expected: Set[Character]): Result[Character] = {
     val actual: Int = getChar(pos)
     if (actual >= 0 && expected.contains(actual.asInstanceOf[Char])) {
       return new Result[Character](pos + 1, actual.asInstanceOf[Char])
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def matchNegative(pos: Int, expected: Set[Character]): Result[Character] = {
+  protected final def matchNegative(pos: Int, expected: Set[Character]): Result[Character] = {
     val actual: Int = getChar(pos)
     if (actual >= 0 && !expected.contains(actual.asInstanceOf[Char])) {
       return new Result[Character](pos + 1, actual.asInstanceOf[Char])
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def `match`(pos: Int, expected: CharacterSet, not: Boolean): Result[Character] = {
+  protected final def `match`(pos: Int, expected: CharacterSet, not: Boolean): Result[Character] = {
     val actual: Int = getChar(pos)
     if (actual >= 0) {
       val contains: Boolean = expected.contains(actual.asInstanceOf[Char])
@@ -147,54 +125,39 @@ abstract class AbstractPackratParser {
         return new Result[Character](pos + 1, actual.asInstanceOf[Char])
       }
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def matchPositive(pos: Int, expected: CharacterSet): Result[Character] = {
-    val actual: Int = getChar(pos)
+  protected final def matchPositive(pos: Int, expected: CharacterSet): Result[Character] = {
+    val actual = getChar(pos)
     if (actual >= 0 && expected.contains(actual.asInstanceOf[Char])) {
       return new Result[Character](pos + 1, actual.asInstanceOf[Char])
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def matchNegative(pos: Int, expected: CharacterSet): Result[Character] = {
-    val actual: Int = getChar(pos)
+  protected final def matchNegative(pos: Int, expected: CharacterSet): Result[Character] = {
+    val actual = getChar(pos)
     if (actual >= 0 && !expected.contains(actual.asInstanceOf[Char])) {
       return new Result[Character](pos + 1, actual.asInstanceOf[Char])
     }
-    return Result.FAIL
+    Result.FAIL
   }
 
-  @SuppressWarnings(value = Array("unchecked")) protected final def `match`(pos: Int, str: String): Result[String] = {
-    val length: Int = str.length
-    {
-      var i: Int = 0
-      while (i < length) {
-        {
-          if (getChar(pos + i) != str.charAt(i)) {
-            return Result.FAIL
-          }
-        }
-        ({
-          i += 1; i - 1
-        })
+  protected final def `match`(pos: Int, str: String): Result[String] = {
+    val length = str.length
+    for(i <- 0 until length) {
+      if (getChar(pos + i) != str.charAt(i)) {
+         return Result.FAIL
       }
     }
-    return new Result[String](pos + length, str)
+    new Result[String](pos + length, str)
   }
 
   protected final def createFailure(pos: Int, message: String): Result[T] = {
-    var loc: Location = getLocation(pos)
+    var loc = getLocation(pos)
     if (loc == null) loc = new Location(lastLine, lastColumn)
-    return new Result[T](pos, null, new ParseError(loc, message), new Exception)
+    new Result[T](pos, null, new ParseError(loc, message), new Exception)
   }
 
-  private var in: Reader = null
-  private var baseIndex: Int = 0
-  private var nextIndex: Int = 0
-  private var lastLine: Int = 0
-  private var lastColumn: Int = 0
-  private final val memo_char: IntSpreadArray = null
-  private final val memo_location: SpreadArray[Location] = null
 }

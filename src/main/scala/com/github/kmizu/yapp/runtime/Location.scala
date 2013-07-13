@@ -12,39 +12,22 @@ package com.github.kmizu.yapp.runtime
  * line and column are both 1 origin.
  * @author Kouta Mizushima
  *
+ * Creates an object which represents location in a source file.
+ * @param line line number (>= 1)
+ * @param column column number (>= 1)
  */
-class Location {
-  /**
-   * Creates an object which represents location in a source file.
-   * @param line line number (>= 1)
-   * @param column column number (>= 1)
-   */
-  def this(line: Int, column: Int) {
-    this()
-    this.line = line
-    this.column = column
-  }
-
+case class Location(line: Int, column: Int) {
   /**
    * Gets line number.
    * @return line number
    */
-  def getLine: Int = {
-    return line
-  }
+  def getLine: Int = line
 
   /**
    * Gets column number.
    * @return column number
    */
-  def getColumn: Int = {
-    return column
-  }
+  def getColumn: Int = column
 
-  override def toString: String = {
-    return line + ":" + column
-  }
-
-  private final val line: Int = 0
-  private final val column: Int = 0
+  override def toString: String = line + ":" + column
 }

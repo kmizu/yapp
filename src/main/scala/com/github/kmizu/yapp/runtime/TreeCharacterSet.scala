@@ -2,19 +2,14 @@ package com.github.kmizu.yapp.runtime
 
 import java.util.TreeSet
 
-final class TreeCharacterSet extends CharacterSet {
-  def this(chars: Char*) {
-    this()
+final class TreeCharacterSet(chars: Char*) extends CharacterSet {
+  private[this] val set = new TreeSet[Character]
+
+  {
     for (ch <- chars) set.add(ch)
   }
 
-  def contains(ch: Char): Boolean = {
-    return set.contains(ch)
-  }
+  def contains(ch: Char): Boolean = set.contains(ch)
 
-  def add(ch: Char) {
-    set.add(ch)
-  }
-
-  private var set: TreeSet[Character] = new TreeSet[Character]
+  def add(ch: Char): Unit = set.add(ch)
 }

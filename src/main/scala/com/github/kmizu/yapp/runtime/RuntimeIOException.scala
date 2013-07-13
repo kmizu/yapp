@@ -13,15 +13,6 @@ object RuntimeIOException {
   private final val serialVersionUID: Long = 5846485643752619982L
 }
 
-class RuntimeIOException extends RuntimeException {
-  def this(ex: IOException) {
-    this()
-    this.ex = ex
-  }
-
-  def getIOException: IOException = {
-    return ex
-  }
-
-  protected final val ex: IOException = null
+class RuntimeIOException(val ex: IOException) extends RuntimeException {
+  def getIOException: IOException = ex
 }

@@ -8,9 +8,9 @@ import java.util.List
  *
  * @author Kota Mizushima
  *
- * @param <T> an element type of array
+ * @tparam T an element type of array
  */
-abstract trait SpreadArray {
+trait SpreadArray[T] {
   /**
    * Sets an element of array.
    * @param index index of array
