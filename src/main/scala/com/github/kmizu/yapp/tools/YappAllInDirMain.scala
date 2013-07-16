@@ -13,7 +13,7 @@ object YappAllInDirMain {
         System.arraycopy(args, 2, newArgs, 0, args.length - 2)
         newArgs(newArgs.length - 2) = file.getCanonicalPath
         newArgs(newArgs.length - 1) = dstDir.getCanonicalPath
-        new YappMain(newArgs).generate
+        new YappMain(newArgs:_*).generate
       }
     }
   }
