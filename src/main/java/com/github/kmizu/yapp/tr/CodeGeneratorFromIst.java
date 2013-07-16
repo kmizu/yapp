@@ -1,7 +1,5 @@
 package com.github.kmizu.yapp.tr;
 
-import static com.github.kmizu.yapp.util.SystemProperties.FILE_SEPARATOR;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,9 +31,7 @@ import com.github.kmizu.yapp.Ist.Nop;
 import com.github.kmizu.yapp.Ist.ParserUnit;
 import com.github.kmizu.yapp.Ist.RewindCursor;
 import com.github.kmizu.yapp.Ist.SetSemanticValue;
-import com.github.kmizu.yapp.Ist.Statement;
 import com.github.kmizu.yapp.Ist.Visitor;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class CodeGeneratorFromIst 
   extends Visitor<Void, CodeGeneratorFromIst.CodeContext> 

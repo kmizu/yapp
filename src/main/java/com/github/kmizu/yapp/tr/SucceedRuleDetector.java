@@ -1,6 +1,5 @@
 package com.github.kmizu.yapp.tr;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.kmizu.yapp.Ast;
@@ -25,7 +24,6 @@ import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class SucceedRuleDetector 
   extends Ast.Visitor<Boolean, SucceedRuleDetector.Context>

@@ -1,12 +1,10 @@
 package com.github.kmizu.yapp.tr;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.kmizu.yapp.Ast;
 import com.github.kmizu.yapp.Pair;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
@@ -16,7 +14,6 @@ import com.github.kmizu.yapp.Ast.Cut;
 import com.github.kmizu.yapp.Ast.Empty;
 import com.github.kmizu.yapp.Ast.Expression;
 import com.github.kmizu.yapp.Ast.Fail;
-import com.github.kmizu.yapp.Ast.Grammar;
 import com.github.kmizu.yapp.Ast.N_Alternation;
 import com.github.kmizu.yapp.Ast.N_Sequence;
 import com.github.kmizu.yapp.Ast.NonTerminal;
@@ -30,7 +27,6 @@ import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expression>>> 
   implements Translator<Expression, Set<Expression>>{

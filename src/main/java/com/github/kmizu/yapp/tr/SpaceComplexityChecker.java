@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.kmizu.yapp.Pair;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
 import com.github.kmizu.yapp.Ast.AndPredicate;
@@ -31,7 +30,6 @@ import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.Sets;
 
 public class SpaceComplexityChecker extends Visitor<Boolean, Set<Symbol>> 
   implements Translator<Grammar, List<UnboundedContext>> {

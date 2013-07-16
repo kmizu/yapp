@@ -8,7 +8,6 @@ import com.github.kmizu.yapp.DirectedGraph;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Grammar;
 import com.github.kmizu.yapp.Ast.Visitor;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class DeadRuleEliminator 
   implements Translator<Ast.Grammar, Ast.Grammar> {

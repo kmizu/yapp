@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.kmizu.yapp.Ast;
-import com.github.kmizu.yapp.Pair;
 import com.github.kmizu.yapp.Ast.Action;
 import com.github.kmizu.yapp.Ast.AndPredicate;
 import com.github.kmizu.yapp.Ast.CharClass;
@@ -26,7 +25,7 @@ import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
+
 import static com.github.kmizu.yapp.util.CollectionUtil.map;
 import static com.github.kmizu.yapp.util.CollectionUtil.t;
 

@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.kmizu.yapp.Ast;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
 import com.github.kmizu.yapp.Ast.AndPredicate;
@@ -13,7 +12,6 @@ import com.github.kmizu.yapp.Ast.Cut;
 import com.github.kmizu.yapp.Ast.Empty;
 import com.github.kmizu.yapp.Ast.Expression;
 import com.github.kmizu.yapp.Ast.Fail;
-import com.github.kmizu.yapp.Ast.Grammar;
 import com.github.kmizu.yapp.Ast.N_Alternation;
 import com.github.kmizu.yapp.Ast.N_Sequence;
 import com.github.kmizu.yapp.Ast.NonTerminal;
@@ -21,14 +19,12 @@ import com.github.kmizu.yapp.Ast.NotPredicate;
 import com.github.kmizu.yapp.Ast.Optional;
 import com.github.kmizu.yapp.Ast.Repetition;
 import com.github.kmizu.yapp.Ast.RepetitionPlus;
-import com.github.kmizu.yapp.Ast.Rule;
 import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Terminal;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class FirstSetCollector extends Visitor<Void, Set<Expression>>
   implements Translator<Expression, Set<Expression>> {

@@ -24,7 +24,6 @@ import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class FiniteLengthExpressionCollector extends Ast.Visitor<Boolean, Set<Ast.Expression>>
   implements Translator<Ast.Grammar, Set<Ast.Expression>> {

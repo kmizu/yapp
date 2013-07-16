@@ -2,9 +2,6 @@ package com.github.kmizu.yapp.tools;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class CommandLineParser {
   public final Map<String, Option> options = CollectionUtil.map();

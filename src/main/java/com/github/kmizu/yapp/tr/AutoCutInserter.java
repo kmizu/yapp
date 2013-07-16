@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.github.kmizu.yapp.Ast;
 import com.github.kmizu.yapp.Automata;
-import com.github.kmizu.yapp.DirectedGraph;
 import com.github.kmizu.yapp.Position;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
@@ -29,7 +28,6 @@ import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 import static com.github.kmizu.yapp.util.CollectionUtil.*;
 

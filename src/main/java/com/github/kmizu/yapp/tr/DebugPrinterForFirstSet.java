@@ -6,7 +6,6 @@ import java.util.Set;
 import com.github.kmizu.yapp.Ast;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.*;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class DebugPrinterForFirstSet implements Translator<Ast.Grammar, Void> {
   public Void translate(Grammar from) {

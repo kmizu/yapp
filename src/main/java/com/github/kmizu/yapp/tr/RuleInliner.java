@@ -2,16 +2,12 @@ package com.github.kmizu.yapp.tr;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
 
-import com.github.kmizu.yapp.Ast;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Expression;
 import com.github.kmizu.yapp.Ast.Grammar;
 import com.github.kmizu.yapp.Ast.NonTerminal;
 import com.github.kmizu.yapp.Ast.Rule;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class RuleInliner extends AbstractGrammarExpander<RuleInliner.Context> {
   static class Context {

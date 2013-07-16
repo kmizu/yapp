@@ -30,7 +30,6 @@ import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Wildcard;
 import com.github.kmizu.yapp.Automata.Dfa;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 public class Peg2DfaTranslator extends Ast.Visitor<Regex.Expression, Void>
   implements Translator<Ast.Expression, Automata.Dfa> {

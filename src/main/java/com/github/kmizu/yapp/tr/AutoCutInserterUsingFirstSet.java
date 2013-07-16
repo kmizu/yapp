@@ -1,6 +1,5 @@
 package com.github.kmizu.yapp.tr;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,10 +25,8 @@ import com.github.kmizu.yapp.Ast.Rule;
 import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
-import com.github.kmizu.yapp.Ast.Terminal;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.util.CollectionUtil;
 
 import static com.github.kmizu.yapp.util.CollectionUtil.*;
 
