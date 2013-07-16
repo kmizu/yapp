@@ -7,6 +7,8 @@
  * ************************************************************** */
 package com.github.kmizu.yapp;
 
+import com.github.kmizu.yapp.util.CollectionUtil;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -27,7 +29,7 @@ import static com.github.kmizu.yapp.util.CollectionUtil.*;
 public class Automata {
   public static final int NUM_ALPHABETS = Character.MAX_VALUE + 1;
   public static class Nfa {
-    public final List<NfaState> states = list();
+    public final List<NfaState> states = CollectionUtil.list[NfaState]();
     public int startNum = -1;
     public int finalNum = -1;
     
