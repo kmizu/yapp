@@ -50,7 +50,7 @@ import com.github.kmizu.yapp.util.SystemProperties._
 object YappMain {
   def main(args: Array[String]) {
     try {
-      new YappMain(args).generate
+      new YappMain(args:_*).generate
     }
     catch {
       case e: CommandLineException => {
