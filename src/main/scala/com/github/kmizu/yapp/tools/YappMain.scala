@@ -72,13 +72,10 @@ object YappMain {
 
 class YappMain(args: String*) {
   private final val USAGE = {
-    val usage = new StringBuilder
-    usage.append("Usage: java com.github.kmizu.yapp.tools.YappMain [options ...] <file name> [<dest dir>]" + LINE_SEPARATOR).append("options:" + LINE_SEPARATOR)
-    import scala.collection.JavaConversions._
-    for (desc <- parser.descriptions) {
-      usage.append("  " + desc + LINE_SEPARATOR)
-    }
-    new String(usage.toString())
+    import scala.collection.JavaConverters._
+    val line = s"Usage: java com.github.kmizu.yapp.tools.YappMain [options ...] <file name> [<dest dir>]${LINE_SEPARATOR}options:${LINE_SEPARATOR}"
+    val desc = parser.descriptions.asScala.map{desc => s"  ${desc}${LINE_SEPARATOR}"}.mkString
+    line + desc
   }
   private var srcFile: File = null
   private var dstDir: File = null
