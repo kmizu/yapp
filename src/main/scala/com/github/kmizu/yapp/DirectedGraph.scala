@@ -9,54 +9,57 @@ import java.util.List
 import java.util.Map
 import java.util.Set
 
-class DirectedGraph extends Iterable[N] {
-  def this(defaultInfo: ExtraInfo) {
-    this()
-    this.defaultInfo = defaultInfo
-  }
+class DirectedGraph[N, ExtraInfo >: Null <: AnyRef](defaultInfo: ExtraInfo) extends Iterable[N] {
+  private[this] val nodes = new HashSet[N]
+  private[this] val edges = new HashMap[N, Set[N]]
+  private[this] val infoMap = new HashMap[N, ExtraInfo]
 
   def this() {
-    this()
+    this(null)
   }
 
   def add(node: N) {
     if (!nodes.contains(node)) {
       edges.put(node, new HashSet[N])
     }
+
     nodes.add(node)
     infoMap.put(node, defaultInfo)
   }
 
-  def setInfo(node: N, info: ExtraInfo) {
-    infoMap.put(node, info)
-  }
+  def setInfo(node: N, info: ExtraInfo): Unit = infoMap.put(node, info)
 
-  def getInfo(node: N): ExtraInfo = {
-    return infoMap.get(node)
-  }
+  def getInfo(node: N): ExtraInfo = infoMap.get(node)
 
-  def contains(node: N): Boolean = {
-    return nodes.contains(node)
-  }
+  def contains(node: N): Boolean = nodes.contains(node)
 
-  def addEdge(from: N, to: N) {
-    edges.get(from).add(to)
-  }
+  def addEdge(from: N, to: N): Unit = edges.get(from).add(to)
 
-  def neighbors(from: N): Set[N] = {
-    return Collections.unmodifiableSet(edges.get(from))
-  }
+  def neighbors(from: N): Set[N] = Collections.unmodifiableSet(edges.get(from))
 
-  def iterator: Iterator[N] = {
-    return nodes.iterator
-  }
+  def iterator: Iterator[N] = nodes.iterator
 
   def hasCyclicity(start: N): Boolean = {
-    return hasCyclicity(start, start, new HashSet[N])
+    def cyclic(start: N, current: N, visit: Set[N]): Boolean = {
+      if (visit.contains(current))  return true
+
+      try {
+        visit.add(current)
+        import scala.collection.JavaConversions._
+        for (s <- neighbors(current)) {
+          if (cyclic(start, s, visit)) return true
+        }
+        false
+      } finally {
+        visit.remove(current)
+      }
+    }
+
+    cyclic(start, start, new HashSet[N])
   }
 
   override def toString: String = {
-    val buf: StringBuffer = new StringBuffer
+    val buf = new StringBuffer
     import scala.collection.JavaConversions._
     for (n <- nodes) {
       buf.append(n)
@@ -64,28 +67,6 @@ class DirectedGraph extends Iterable[N] {
       buf.append(edges.get(n))
       buf.append(System.getProperty("line.separator"))
     }
-    return new String(buf)
+    new String(buf)
   }
-
-  private def hasCyclicity(start: N, current: N, visit: Set[N]): Boolean = {
-    if (visit.contains(current)) {
-      return true
-    }
-    try {
-      visit.add(current)
-      import scala.collection.JavaConversions._
-      for (s <- neighbors(current)) {
-        if (hasCyclicity(start, s, visit)) return true
-      }
-      return false
-    }
-    finally {
-      visit.remove(current)
-    }
-  }
-
-  private var nodes: Set[N] = new HashSet[N]
-  private var edges: Map[N, Set[N]] = new HashMap[N, Set[N]]
-  private var infoMap: Map[N, ExtraInfo] = new HashMap[N, ExtraInfo]
-  private var defaultInfo: ExtraInfo = null
 }

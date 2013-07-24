@@ -8,18 +8,7 @@
 package com.github.kmizu.yapp
 
 object Pair {
-  def make(fst: F, snd: S): Pair[F, S] = {
-    return new Pair[F, S](fst, snd)
-  }
+  def make[F, S](fst: F, snd: S): Pair[F, S] = Pair(fst, snd)
 }
 
-class Pair {
-  def this(fst: F, snd: S) {
-    this()
-    this.fst = fst
-    this.snd = snd
-  }
-
-  final val fst: F = null
-  final val snd: S = null
-}
+final case class Pair[F, S](fst: F, snd: S)

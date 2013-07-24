@@ -21,18 +21,12 @@ object Regex {
   final val ERROR: Regex.Error = new Regex.Error
 
   abstract class Expression {
-    def accept(visitor: Regex.Visitor[C, R], context: C): R
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R
   }
 
   abstract class BinaryExpression extends Expression {
-    def this(lhs: Regex.Expression, rhs: Regex.Expression) {
-      this()
-      this.lhs = lhs
-      this.rhs = rhs
-    }
-
-    final val lhs: Regex.Expression = null
-    final val rhs: Regex.Expression = null
+    val lhs: Regex.Expression
+    val rhs: Regex.Expression
   }
 
   /**
@@ -40,21 +34,15 @@ object Regex {
    * @author Kota Mizushima
    *
    */
-  class Repetition extends Expression {
-    def this(body: Regex.Expression) {
-      this()
-      this.body = body
-    }
+  case class Repetition(body: Regex.Expression) extends Expression {
 
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
       return visitor.visit(this, context)
     }
 
     override def toString: String = {
       return "(" + body + "*)"
     }
-
-    final val body: Regex.Expression = null
   }
 
   /**
@@ -62,13 +50,8 @@ object Regex {
    * @author Kota Mizushima
    *
    */
-  class Alternation extends BinaryExpression {
-    def this(lhs: Regex.Expression, rhs: Regex.Expression) {
-      this()
-      `super`(lhs, rhs)
-    }
-
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
+  case class Alternation(lhs: Regex.Expression, rhs: Regex.Expression) extends BinaryExpression {
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -82,13 +65,9 @@ object Regex {
    * @author Kota Mizushima
    *
    */
-  class Sequence extends BinaryExpression {
-    def this(lhs: Regex.Expression, rhs: Regex.Expression) {
-      this()
-      `super`(lhs, rhs)
-    }
+  case class Sequence(lhs: Regex.Expression, rhs: Regex.Expression) extends BinaryExpression {
 
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -103,7 +82,7 @@ object Regex {
    *
    */
   class All extends Expression {
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -118,7 +97,7 @@ object Regex {
    *
    */
   class Empty extends Expression {
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -132,25 +111,15 @@ object Regex {
    * @author Kota Mizushima
    *
    */
-  class Char extends Expression {
-    def this(chr: Char) {
-      this()
-      this.chr = chr
-    }
+  case class Char(chr: scala.Char) extends Expression {
 
-    def getChar: Char = {
-      return chr
-    }
+    def getChar: scala.Char = chr
 
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
     override def toString: String = {
       return "" + chr
     }
-
-    private final val chr: Char = 0
   }
 
   /**
@@ -158,24 +127,12 @@ object Regex {
    * @author Kota Mizushima
    *
    */
-  class CharClass extends Expression {
-    def this(not: Boolean, chars: Set[Character]) {
-      this()
-      this.not = not
-      this.chars = chars
-    }
+  case class CharClass(not: Boolean, chars: Set[Character]) extends Expression {
+    def isNot: Boolean = not
 
-    def isNot: Boolean = {
-      return not
-    }
+    def getChars: Set[Character] = chars
 
-    def getChars: Set[Character] = {
-      return chars
-    }
-
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
     override def toString: String = {
       val buf: StringBuffer = new StringBuffer
@@ -190,9 +147,6 @@ object Regex {
       buf.append(']')
       return new String(buf)
     }
-
-    private final val not: Boolean = false
-    private final val chars: Set[Character] = null
   }
 
   /**
@@ -203,7 +157,7 @@ object Regex {
       this()
     }
 
-    def accept(visitor: Regex.Visitor[C, R], context: C): R = {
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -216,40 +170,25 @@ object Regex {
    * A visitor to visit an AST of a RE.
    * @author Kota Mizushima
    *
-   * @param <C>
+   * @tparam C context type of Visitor
+   * @tparam R argument type of Visitor's visit methods.
    */
-  abstract class Visitor {
-    protected def visit(expression: Regex.All, context: C): R = {
-      return null
-    }
+  abstract class Visitor[C, R >: Null] {
+    protected[yapp] def visit(expression: Regex.All, context: C): R = null
 
-    protected def visit(expression: Regex.Alternation, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.Alternation, context: C): R = null
 
-    protected def visit(expression: Regex.Char, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.Char, context: C): R = null
 
-    protected def visit(expression: Regex.CharClass, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.CharClass, context: C): R = null
 
-    protected def visit(expression: Regex.Empty, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.Empty, context: C): R = null
 
-    protected def visit(expression: Regex.Repetition, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.Repetition, context: C): R = null
 
-    protected def visit(expression: Regex.Sequence, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.Sequence, context: C): R = null
 
-    protected def visit(expression: Regex.Error, context: C): R = {
-      return null
-    }
+    protected[yapp] def visit(expression: Regex.Error, context: C): R = null
   }
 
 }

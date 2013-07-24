@@ -1,11 +1,6 @@
 package com.github.kmizu.yapp
 
-class CompilationException extends RuntimeException {
-  def this(reason: Exception) {
-    this()
-    `super`(reason)
-  }
-
+class CompilationException(val reason: Exception) extends RuntimeException(reason) {
   def getReason: Throwable = {
     return getCause
   }

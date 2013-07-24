@@ -1,21 +1,9 @@
 package com.github.kmizu.yapp
 
-class SymbolGenerator {
-  def this(prefix: String) {
-    this()
-    this.prefix = prefix
-  }
+class SymbolGenerator(val prefix: String) {
+  private[this] var count = 0
 
-  def gensym: Symbol = {
-    return Symbol.intern(prefix + (({
-      count += 1; count - 1
-    })))
-  }
+  def gensym: Symbol = Symbol.intern(prefix + { val old = count; count += 1; old })
 
-  def reset {
-    count = 0
-  }
-
-  private var prefix: String = null
-  private var count: Int = 0
+  def reset: Unit = count = 0
 }

@@ -25,6 +25,7 @@ import com.github.kmizu.yapp.util.CollectionUtil._
  *
  */
 object Automata {
+  final val NUM_ALPHABETS: Int = Character.MAX_VALUE + 1
   @SuppressWarnings(Array("unchecked")) def fromNfa2Dfa(nfa: Automata.Nfa): Automata.Dfa = {
     val tables: List[Array[Int]] = list
     val nfa2dfa: Map[Set[Integer], Integer] = map
@@ -69,7 +70,6 @@ object Automata {
     return new Automata.Dfa(newTables, start, finals)
   }
 
-  final val NUM_ALPHABETS: Int = Character.MAX_VALUE + 1
 
   class Nfa {
     def addState: Int = {
@@ -141,33 +141,22 @@ object Automata {
   }
 
   object Dfa {
-    private def spacing(w: PrintWriter, n: Int) {
-      {
-        var i: Int = 0
-        while (i < n) {
-          {
-            w.print(" ")
-          }
-          ({
-            i += 1; i - 1
-          })
-        }
+    private def spacing(w: PrintWriter, n: Int): Unit = {
+      var i: Int = 0
+      while (i < n) {
+        w.print(" ")
+        i += 1
       }
     }
 
     final val ERROR: Automata.Dfa = new Automata.Dfa(null, -1, null)
   }
 
-  class Dfa {
-    def this(table: Array[Array[Int]], start: Int, finals: Set[Integer]) {
-      this()
-      this.table = table
-      this.start = start
-      this.finals = finals
-    }
-
+  class Dfa(val table: Array[Array[Int]], val start: Int, val finals: Set[Integer]) {
+    import Dfa._
+    import Automata._
     def and(rhs: Automata.Dfa): Automata.Dfa = {
-      val newTable: Array[Array[Int]] = new Array[Array[Int]](table.length * rhs.table.length, NUM_ALPHABETS)
+      val newTable = Array.ofDim[Int](table.length * rhs.table.length, NUM_ALPHABETS)
       val newStart: Int = rhs.table.length * start + rhs.start
       val newFinals: Set[Integer] = set
       import scala.collection.JavaConversions._
@@ -231,11 +220,9 @@ object Automata {
 
     override def toString: String = {
       var maxDigit: Int = String.valueOf(table.length).length
-      if (maxDigit % 2 == 0) ({
-        maxDigit += 1; maxDigit - 1
-      })
-      val ASCII_PRINTABLE_START: Int = 32
-      val ASCII_PRINTABLE_FINAL: Int = 126
+      if (maxDigit % 2 == 0) maxDigit += 1
+      val ASCII_PRINTABLE_START = 32
+      val ASCII_PRINTABLE_FINAL = 126
       val buff: StringWriter = new StringWriter
       val w: PrintWriter = new PrintWriter(buff)
       w.printf("start: %d%n", start)
@@ -294,26 +281,16 @@ object Automata {
       return new String(buff.getBuffer)
     }
 
-    private def mark(reachable: Set[Integer], stateNum: Int) {
+    private def mark(reachable: Set[Integer], stateNum: Int): Unit = {
       if (reachable.contains(stateNum)) return
       reachable.add(stateNum)
-      {
-        var input: Int = 0
-        while (input < NUM_ALPHABETS) {
-          {
-            val next: Int = table(stateNum)(input)
-            if (next != -1) mark(reachable, next)
-          }
-          ({
-            input += 1; input - 1
-          })
-        }
+      var input = 0
+      while (input < NUM_ALPHABETS) {
+        val next = table(stateNum)(input)
+        if (next != -1) mark(reachable, next)
+        input += 1
       }
     }
-
-    final val table: Array[Array[Int]] = null
-    final val start: Int = 0
-    final val finals: Set[Integer] = null
   }
 
 }

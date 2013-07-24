@@ -11,39 +11,26 @@ package com.github.kmizu.yapp
  * A position information in a source file.
  * @author Kota Mizushima
  *
+ * Creates a Position's instance.
+ *
+ * @param line line number
+ * @param column column number
  */
-class Position {
-  /**
-   * Creates a Position's instance.
-   * @param line line number
-   * @param column column number
-   */
-  def this(line: Int, column: Int) {
-    this()
-    this.line = line
-    this.column = column
-  }
-
+final case class Position(line: Int, column: Int) {
   /**
    * Gets line number.
+   * TODO should be removed after fixing all callers to call `line` instead of this method
    * @return line number
    */
-  def getLine: Int = {
-    return line
-  }
+  //TODO should be removed after fixing callers
+  def getLine: Int = line
 
   /**
    * Gets column number.
+   * TODO should be removed after fixing all callers to call `column` instead of this method
    * @return column number
    */
-  def getColumn: Int = {
-    return column
-  }
+  def getColumn: Int = column
 
-  override def toString: String = {
-    return line + ":" + column
-  }
-
-  private var line: Int = 0
-  private var column: Int = 0
+  override def toString: String = line + ":" + column
 }
