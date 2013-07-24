@@ -7,6 +7,7 @@
  * ************************************************************** */
 package com.github.kmizu.yapp
 
+import scala.util.control.Breaks._
 import com.github.kmizu.yapp.util.CollectionUtil
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -18,6 +19,7 @@ import java.util.Map
 import java.util.Set
 import com.github.kmizu.yapp.util.CollectionUtil._
 
+
 /**
  * Represents the Automata(Nfa and DFA) namespace.
  * This class has no member except static class or interface or constant.
@@ -26,52 +28,49 @@ import com.github.kmizu.yapp.util.CollectionUtil._
  */
 object Automata {
   final val NUM_ALPHABETS: Int = Character.MAX_VALUE + 1
-  @SuppressWarnings(Array("unchecked")) def fromNfa2Dfa(nfa: Automata.Nfa): Automata.Dfa = {
-    val tables: List[Array[Int]] = list
-    val nfa2dfa: Map[Set[Integer], Integer] = map
-    val unmarked: List[Set[Integer]] = list
-    val finals: Set[Integer] = set
+  def fromNfa2Dfa(nfa: Automata.Nfa): Automata.Dfa = {
+    val tables: List[Array[Int]] = CollectionUtil.list[Array[Int]]()
+    val nfa2dfa: Map[Set[Integer], Integer] = CollectionUtil.map[Set[Integer], Integer]()
+    val unmarked: List[Set[Integer]] = CollectionUtil.list[Set[Integer]]()
+    val finals: Set[Integer] = CollectionUtil.set[Integer]()
     val dstart: Set[Integer] = nfa.eclosure(nfa.startNum)
     unmarked.add(dstart)
     nfa2dfa.put(dstart, 0)
     tables.add(new Array[Int](NUM_ALPHABETS))
     if (dstart.contains(nfa.finalNum)) finals.add(0)
-    while (true) {
-      if (unmarked.isEmpty) break //todo: break is not supported
-      val t: Set[Integer] = unmarked.remove(unmarked.size - 1)
-      val t2: Integer = nfa2dfa.get(t)
-      {
-        var sym: Int = 0
-        while (sym < NUM_ALPHABETS) {
-          {
-            val u: Set[Integer] = nfa.eclosure(nfa.move(t, sym.asInstanceOf[Char]))
-            var u2: Integer = nfa2dfa.get(u)
-            if (u2 == null) {
-              u2 = nfa2dfa.size
-              unmarked.add(u)
-              tables.add(new Array[Int](NUM_ALPHABETS))
-              nfa2dfa.put(u, u2)
-              if (u.contains(nfa.finalNum)) finals.add(u2)
-            }
-            tables.get(t2)(sym) = u2
-          }
-          ({
-            sym += 1; sym - 1
-          })
+    breakable(while (true) {
+      if (unmarked.isEmpty) break()
+      val t = unmarked.remove(unmarked.size - 1)
+      val t2 = nfa2dfa.get(t)
+      var sym = 0
+      while (sym < NUM_ALPHABETS) {
+        val u = nfa.eclosure(nfa.move(t, sym.asInstanceOf[Char]))
+        var u2 = nfa2dfa.get(u)
+        if (u2 == null) {
+          u2 = nfa2dfa.size
+          unmarked.add(u)
+          tables.add(new Array[Int](NUM_ALPHABETS))
+          nfa2dfa.put(u, u2)
+          if (u.contains(nfa.finalNum)) finals.add(u2)
         }
+        tables.get(t2)(sym) = u2
+        sym += 1
       }
-    }
-    val newTables: Array[Array[Int]] = new Array[Array[Int]](nfa2dfa.size)
-    val start: Int = nfa2dfa.get(dstart)
+    })
+    val newTables = new Array[Array[Int]](nfa2dfa.size)
+    val start = nfa2dfa.get(dstart)
     import scala.collection.JavaConversions._
     for (stateNum <- nfa2dfa.values) {
       newTables(stateNum) = tables.get(stateNum)
     }
-    return new Automata.Dfa(newTables, start, finals)
+    new Automata.Dfa(newTables, start, finals)
   }
 
-
   class Nfa {
+    final val states: List[Automata.NfaState] = CollectionUtil.list[Automata.NfaState]()
+    var startNum: Int = -1
+    var finalNum: Int = -1
+
     def addState: Int = {
       val state: Automata.NfaState = new Automata.NfaState
       states.add(state)
@@ -87,9 +86,9 @@ object Automata {
     }
 
     def eclosure(stateNum: Int): Set[Integer] = {
-      val result: Set[Integer] = set(stateNum)
+      val result = set[Integer](stateNum)
       while (true) {
-        val copy: Set[Integer] = setFrom(result)
+        val copy: Set[Integer] = setFrom[Integer](result)
         import scala.collection.JavaConversions._
         for (next <- copy) {
           val state: Automata.NfaState = states.get(next)
@@ -97,29 +96,26 @@ object Automata {
         }
         if (result.size == copy.size) break //todo: break is not supported
       }
-      return result
+      result
     }
 
     def eclosure(stateNums: Set[Integer]): Set[Integer] = {
-      val result: Set[Integer] = set
+      val result: Set[Integer] = CollectionUtil.set[Integer]()
       import scala.collection.JavaConversions._
       for (stateNum <- stateNums) result.addAll(eclosure(stateNum))
-      return result
+      result
     }
 
     def move(stateNums: Set[Integer], input: Char): Set[Integer] = {
-      val result: Set[Integer] = set
+      val result: Set[Integer] = CollectionUtil.set[Integer]()
       import scala.collection.JavaConversions._
       for (stateNum <- stateNums) {
         val nexts: Set[Integer] = states.get(stateNum).strans.get(input)
         if (nexts != null) result.addAll(nexts)
       }
-      return result
+      result
     }
 
-    final val states: List[Automata.NfaState] = CollectionUtil.list(NfaState)
-    var startNum: Int = -1
-    var finalNum: Int = -1
   }
 
   class NfaState {
@@ -136,8 +132,8 @@ object Automata {
       etrans.add(next)
     }
 
-    final val etrans: Set[Integer] = set
-    final val strans: Map[Character, Set[Integer]] = map
+    final val etrans: Set[Integer] = CollectionUtil.set[Integer]()
+    final val strans: Map[Character, Set[Integer]] = CollectionUtil.map[Character, Set[Integer]]()
   }
 
   object Dfa {
@@ -158,7 +154,7 @@ object Automata {
     def and(rhs: Automata.Dfa): Automata.Dfa = {
       val newTable = Array.ofDim[Int](table.length * rhs.table.length, NUM_ALPHABETS)
       val newStart: Int = rhs.table.length * start + rhs.start
-      val newFinals: Set[Integer] = set
+      val newFinals: Set[Integer] = CollectionUtil.set[Integer]()
       import scala.collection.JavaConversions._
       for (a <- finals) {
         import scala.collection.JavaConversions._
@@ -212,7 +208,7 @@ object Automata {
     }
 
     def isEmpty: Boolean = {
-      val reachable: Set[Integer] = set
+      val reachable: Set[Integer] = CollectionUtil.set[Integer]()
       mark(reachable, start)
       reachable.retainAll(finals)
       return reachable.isEmpty
@@ -225,7 +221,7 @@ object Automata {
       val ASCII_PRINTABLE_FINAL = 126
       val buff: StringWriter = new StringWriter
       val w: PrintWriter = new PrintWriter(buff)
-      w.printf("start: %d%n", start)
+      w.printf("start: %d%n", new Integer(start))
       w.printf("final: ")
       import scala.collection.JavaConversions._
       for (f <- finals) {
@@ -233,49 +229,34 @@ object Automata {
       }
       w.println
       spacing(w, maxDigit + 1)
+
       {
         var i: Int = ASCII_PRINTABLE_START
         while (i <= ASCII_PRINTABLE_FINAL) {
-          {
-            spacing(w, maxDigit / 2)
-            w.printf("%c", i.asInstanceOf[Char])
-            spacing(w, maxDigit / 2 + 1)
-          }
-          ({
-            i += 1; i - 1
-          })
+          spacing(w, maxDigit / 2)
+          w.printf("%c", new Character(i.asInstanceOf[scala.Char]))
+          spacing(w, maxDigit / 2 + 1)
+          i += 1
         }
       }
       w.println
-      {
-        var i: Int = 0
-        while (i < table.length) {
-          {
-            w.printf("%0" + maxDigit + "d ", i)
-            {
-              var j: Int = ASCII_PRINTABLE_START
-              while (j <= ASCII_PRINTABLE_FINAL) {
-                {
-                  if (table(i)(j) != -1) {
-                    w.printf("%0" + maxDigit + "d ", table(i)(j))
-                  }
-                  else {
-                    spacing(w, maxDigit / 2)
-                    w.print("X")
-                    spacing(w, maxDigit / 2 + 1)
-                  }
-                }
-                ({
-                  j += 1; j - 1
-                })
-              }
-            }
-            w.println
+
+      var i: Int = 0
+      while (i < table.length) {
+        w.printf("%0" + maxDigit + "d ", new Integer(i))
+        var j: Int = ASCII_PRINTABLE_START
+        while (j <= ASCII_PRINTABLE_FINAL) {
+          if (table(i)(j) != -1) {
+            w.printf("%0" + maxDigit + "d ", new Integer(table(i)(j)))
+          } else {
+            spacing(w, maxDigit / 2)
+            w.print("X")
+            spacing(w, maxDigit / 2 + 1)
           }
-          ({
-            i += 1; i - 1
-          })
+          j += 1
+          w.println
         }
+        i += 1
       }
       w.flush
       return new String(buff.getBuffer)
