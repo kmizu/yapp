@@ -81,7 +81,7 @@ object Ast {
 
   abstract class Terminal extends Expression
 
-  case class Grammar(pos: Position, @BeanProperty var name: Symbol, macros: List[Ast.MacroDefinition], rules: List[Ast.Rule]) extends Node with Iterable[Ast.Rule] {
+  case class Grammar(pos: Position, @BeanProperty var name: Symbol, macros: List[Ast.MacroDefinition], rules: List[Ast.Rule]) extends Node with java.lang.Iterable[Ast.Rule] {
     def iterator: Iterator[Ast.Rule] = rules.iterator
 
     def setName(name: Symbol): Unit = {
