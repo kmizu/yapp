@@ -225,13 +225,11 @@ object Ast {
   }
 
   abstract class CharClassNode
-
   case class CharacterElement(value: Char) extends CharClassNode
-
   case class Range(start: Char, end: Char) extends CharClassNode
 
-  case class CharClass(pos: Position, positive: Boolean, elements: List[Ast.CharClass], `var`: Symbol) extends Terminal {
-    def this(pos: Position, positive: Boolean, elements: List[Ast.CharClass]) {
+  case class CharClass(pos: Position, positive: Boolean, elements: List[Ast.CharClassNode], `var`: Symbol) extends Terminal {
+    def this(pos: Position, positive: Boolean, elements: List[Ast.CharClassNode]) {
       this(pos, positive, Collections.unmodifiableList(elements), null)
     }
 
@@ -289,5 +287,37 @@ object Ast {
       }
       return new String(buf)
     }
+  }
+
+  abstract class Visitor[E >: Null, T] {
+    // Definitions
+    def visit(node: Grammar, context: T): E = null
+    def visit(node: MacroDefinition, context: T): E = null
+    def visit(node: Rule, context: T): E = null
+
+    // Expressions
+    def visit(node: Action, context: T): E = null
+    def visit(node: BoundedExpression, context: T): E = null
+    def visit(node: SetValueAction, context: T): E = null
+    def visit(node: N_Alternation, context: T): E = null
+    def visit(node: N_Sequence, context: T): E = null
+    def visit(node: NonTerminal, context: T): E = null
+    def visit(node: MacroVariable, context: T): E = null
+    def visit(node: MacroCall, context: T): E = null
+    def visit(node: AndPredicate, context: T): E = null
+    def visit(node: NotPredicate, context: T): E = null
+    def visit(node: SemanticPredicate, context: T): E = null
+    def visit(node: Repetition, context: T): E = null
+    def visit(node: RepetitionPlus, context: T): E = null
+    def visit(node: Optional, context: T): E = null
+    def visit(node: StringLiteral, context: T): E = null
+    def visit(node: Wildcard, context: T): E = null
+    def visit(node: Cut, context: T): E = null
+    def visit(node: Fail, context: T): E = null
+    def visit(node: Empty, context: T): E = null
+
+    // Nodes in character classes
+    def visit(node: CharacterElement, context: T): E = null
+    def visit(node: Range, context: T): E = null
   }
 }
