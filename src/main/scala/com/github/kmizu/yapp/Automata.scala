@@ -87,15 +87,15 @@ object Automata {
 
     def eclosure(stateNum: Int): Set[Integer] = {
       val result = set[Integer](stateNum)
-      while (true) {
-        val copy: Set[Integer] = setFrom[Integer](result)
+      var copy: Set[Integer] = null
+      do {
+        copy = setFrom[Integer](result)
         import scala.collection.JavaConversions._
         for (next <- copy) {
-          val state: Automata.NfaState = states.get(next)
+          val state = states.get(next)
           result.addAll(state.etrans)
         }
-        if (result.size == copy.size) break //todo: break is not supported
-      }
+      } while (result.size() != copy.size())
       result
     }
 
@@ -138,11 +138,7 @@ object Automata {
 
   object Dfa {
     private def spacing(w: PrintWriter, n: Int): Unit = {
-      var i: Int = 0
-      while (i < n) {
-        w.print(" ")
-        i += 1
-      }
+      w.print(" " * n)
     }
 
     final val ERROR: Automata.Dfa = new Automata.Dfa(null, -1, null)
@@ -153,8 +149,8 @@ object Automata {
     import Automata._
     def and(rhs: Automata.Dfa): Automata.Dfa = {
       val newTable = Array.ofDim[Int](table.length * rhs.table.length, NUM_ALPHABETS)
-      val newStart: Int = rhs.table.length * start + rhs.start
-      val newFinals: Set[Integer] = CollectionUtil.set[Integer]()
+      val newStart = rhs.table.length * start + rhs.start
+      val newFinals = CollectionUtil.set[Integer]()
       import scala.collection.JavaConversions._
       for (a <- finals) {
         import scala.collection.JavaConversions._
@@ -162,56 +158,35 @@ object Automata {
           newFinals.add(rhs.table.length * a + b)
         }
       }
-      {
-        var a: Int = 0
-        while (a < table.length) {
-          {
-            {
-              var b: Int = 0
-              while (b < rhs.table.length) {
-                {
-                  {
-                    var input: Int = 0
-                    while (input < NUM_ALPHABETS) {
-                      {
-                        val nextA: Int = table(a)(input)
-                        val nextB: Int = rhs.table(b)(input)
-                        if (nextA == -1 || nextB == -1) {
-                          newTable(rhs.table.length * a + b)(input) = -1
-                        }
-                        else {
-                          newTable(rhs.table.length * a + b)(input) = rhs.table.length * nextA + nextB
-                        }
-                      }
-                      ({
-                        input += 1; input - 1
-                      })
-                    }
-                  }
-                }
-                ({
-                  b += 1; b - 1
-                })
-              }
+      var a = 0
+      while (a < table.length) {
+        var b = 0
+        while (b < rhs.table.length) {
+          var input: Int = 0
+          while (input < NUM_ALPHABETS) {
+            val nextA = table(a)(input)
+            val nextB = rhs.table(b)(input)
+            if (nextA == -1 || nextB == -1) {
+              newTable(rhs.table.length * a + b)(input) = -1
+            } else {
+              newTable(rhs.table.length * a + b)(input) = rhs.table.length * nextA + nextB
             }
+            input += 1
           }
-          ({
-            a += 1; a - 1
-          })
+          b += 1
         }
+        a += 1
       }
-      return new Automata.Dfa(newTable, newStart, newFinals)
+      new Automata.Dfa(newTable, newStart, newFinals)
     }
 
-    def disjoint(dfa: Automata.Dfa): Boolean = {
-      return this.and(dfa).isEmpty
-    }
+    def disjoint(dfa: Automata.Dfa): Boolean = this.and(dfa).isEmpty
 
     def isEmpty: Boolean = {
       val reachable: Set[Integer] = CollectionUtil.set[Integer]()
       mark(reachable, start)
       reachable.retainAll(finals)
-      return reachable.isEmpty
+      reachable.isEmpty
     }
 
     override def toString: String = {
@@ -259,7 +234,7 @@ object Automata {
         i += 1
       }
       w.flush
-      return new String(buff.getBuffer)
+      new String(buff.getBuffer)
     }
 
     private def mark(reachable: Set[Integer], stateNum: Int): Unit = {
