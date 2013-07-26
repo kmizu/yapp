@@ -22,31 +22,12 @@ import java.util.Set
 object Ist {
 
   abstract class Node {
-    def this(pos: Position) {
-      this()
-      this.pos = pos
-    }
-
-    def pos: Position = {
-      return pos
-    }
+    def pos: Position
 
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R
-
-    private final val pos: Position = null
   }
 
-  class ParserUnit extends Node with Iterable[Ist.Function] {
-    def this(pos: Position, name: Symbol, nameToCharSet: Map[Symbol, Set[Character]], startName: Symbol, startType: Symbol, rules: List[Ist.Function]) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.nameToCharSet = nameToCharSet
-      this.startName = startName
-      this.startType = startType
-      this.rules = rules
-    }
-
+  case class ParserUnit (pos: Position, name: Symbol, nameToCharSet: Map[Symbol, Set[Character]], startName: Symbol, startType: Symbol, rules: List[Ist.Function]) extends Node with Iterable[Ist.Function] {
     def getName: Symbol = {
       return name
     }
@@ -89,25 +70,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val name: Symbol = null
-    private final val startName: Symbol = null
-    private final val startType: Symbol = null
-    private final val rules: List[Ist.Function] = null
-    private final val nameToCharSet: Map[Symbol, Set[Character]] = null
   }
 
-  class Function extends Node {
-    def this(pos: Position, name: Symbol, `type`: Symbol, code: String, memoized: Boolean, statement: Ist.Statement) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.`type` = `type`
-      this.code = code
-      this.memoized = memoized
-      this.statement = statement
-    }
-
+  case class Function(pos: Position, name: Symbol, `type`: Symbol, code: String, memoized: Boolean, statement: Ist.Statement) extends Node {
     def getName: Symbol = {
       return name
     }
@@ -131,27 +96,11 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val name: Symbol = null
-    private final val `type`: Symbol = null
-    private final val code: String = null
-    private final val memoized: Boolean = false
-    private final val statement: Ist.Statement = null
   }
 
-  abstract class Statement extends Node {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-  }
+  abstract class Statement extends Node
 
-  class ActionStatement extends Statement {
-    def this(pos: Position, code: String) {
-      this()
-      `super`(pos)
-      this.code = code
-    }
+  case class ActionStatement(pos: Position, code: String) extends Statement {
 
     def getCode: String = {
       return code
@@ -160,17 +109,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private var code: String = null
   }
 
-  class SetSemanticValue extends Statement {
-    def this(pos: Position, code: String) {
-      this()
-      `super`(pos)
-      this.code = code
-    }
-
+  case class SetSemanticValue(pos: Position, code: String) extends Statement {
     def getCode: String = {
       return code
     }
@@ -178,23 +119,11 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private var code: String = null
   }
 
-  class Block extends Statement {
-    def this(pos: Position, label: Symbol, statements: Ist.Statement*) {
-      this()
-      `super`(pos)
-      this.label = label
-      this.statements = statements
-    }
-
+  case class Block(pos: Position, label: Symbol, statements: Ist.Statement*) extends Statement {
     def this(pos: Position, label: Symbol, statements: List[Ist.Statement]) {
-      this()
-      `super`(pos)
-      this.label = label
-      this.statements = statements.toArray(new Array[Ist.Statement](0))
+      this(pos, label, statements:_*)
     }
 
     def getLabel: Symbol = {
@@ -202,24 +131,15 @@ object Ist {
     }
 
     def getStatements: Array[Ist.Statement] = {
-      return statements
+      return statements.toArray
     }
 
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val label: Symbol = null
-    private final val statements: Array[Ist.Statement] = null
   }
 
-  class EscapeFrom extends Statement {
-    def this(pos: Position, label: Symbol) {
-      this()
-      `super`(pos)
-      this.label = label
-    }
-
+  case class EscapeFrom(pos: Position, label: Symbol) extends Statement {
     def getLabel: Symbol = {
       return label
     }
@@ -227,30 +147,15 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val label: Symbol = null
   }
 
-  class Fail extends Statement {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class Fail(pos: Position) extends Statement {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
 
-  class MatchString extends Statement {
-    def this(pos: Position, `var`: Ist.Var, value: String, label: Symbol) {
-      this()
-      `super`(pos)
-      this.`var` = `var`
-      this.value = value
-      this.label = label
-    }
-
+  case class MatchString(pos: Position, `var`: Ist.Var, value: String, label: Symbol) extends Statement {
     def getVar: Ist.Var = {
       return `var`
     }
@@ -266,18 +171,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val `var`: Ist.Var = null
-    private final val value: String = null
-    private final val label: Symbol = null
   }
 
-  class Accept extends Statement {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class Accept(pos: Position) extends Statement {
     override def toString: String = {
       return "accept;"
     }
@@ -287,12 +183,7 @@ object Ist {
     }
   }
 
-  class GenerateSuccess extends Statement {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class GenerateSuccess(pos: Position) extends Statement {
     override def toString: String = {
       return "generate_success;"
     }
@@ -302,15 +193,9 @@ object Ist {
     }
   }
 
-  class GenerateFailure extends Statement {
-    def this(pos: Position, message: String) {
-      this()
-      `super`(pos)
-      this.expected = message
-    }
-
+  case class GenerateFailure(pos: Position, message: String) extends Statement {
     def expected: String = {
-      return expected
+      return message
     }
 
     override def toString: String = {
@@ -320,18 +205,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private var expected: String = null
   }
 
-  class MatchAny extends Statement {
-    def this(pos: Position, `var`: Ist.Var, label: Symbol) {
-      this()
-      `super`(pos)
-      this.`var` = `var`
-      this.label = label
-    }
-
+  case class MatchAny(pos: Position, `var`: Ist.Var, label: Symbol) extends Statement {
     def getVar: Ist.Var = {
       return `var`
     }
@@ -343,21 +219,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val `var`: Ist.Var = null
-    private final val label: Symbol = null
   }
 
-  class MatchCharClass extends Statement {
-    def this(pos: Position, name: Symbol, `var`: Ist.Var, positive: Boolean, label: Symbol) {
-      this()
-      `super`(pos)
-      this.name = name
-      this.`var` = `var`
-      this.positive = positive
-      this.label = label
-    }
-
+  case class MatchCharClass(pos: Position, name: Symbol, `var`: Ist.Var, positive: Boolean, label: Symbol) extends Statement {
     def getName: Symbol = {
       return name
     }
@@ -377,20 +241,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val name: Symbol = null
-    private final val `var`: Ist.Var = null
-    private final val positive: Boolean = false
-    private final val label: Symbol = null
   }
 
-  class NewCursorVar extends Statement {
-    def this(pos: Position, name: Symbol) {
-      this()
-      `super`(pos)
-      this.name = name
-    }
-
+  case class NewCursorVar(pos: Position, name: Symbol) extends Statement {
     def getName: Symbol = {
       return name
     }
@@ -398,28 +251,15 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val name: Symbol = null
   }
 
-  class Nop extends Statement {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class Nop(pos: Position) extends Statement {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
 
-  class Var {
-    def this(name: Symbol, `type`: Symbol) {
-      this()
-      this.name = name
-      this.`type` = `type`
-    }
-
+  case class Var(name: Symbol, `type`: Symbol) {
     def getName: Symbol = {
       return name
     }
@@ -427,20 +267,9 @@ object Ist {
     def getType: Symbol = {
       return `type`
     }
-
-    private final val name: Symbol = null
-    private final val `type`: Symbol = null
   }
 
-  class MatchRule extends Statement {
-    def this(pos: Position, `var`: Ist.Var, rule: Symbol, label: Symbol) {
-      this()
-      `super`(pos)
-      this.`var` = `var`
-      this.rule = rule
-      this.label = label
-    }
-
+  case class MatchRule(pos: Position, `var`: Ist.Var, rule: Symbol, label: Symbol) extends Statement {
     def getVar: Ist.Var = {
       return `var`
     }
@@ -456,19 +285,9 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val `var`: Ist.Var = null
-    private final val rule: Symbol = null
-    private final val label: Symbol = null
   }
 
-  class BackupCursor extends Statement {
-    def this(pos: Position, `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.`var` = `var`
-    }
-
+  case class BackupCursor(pos: Position, `var`: Symbol) extends Statement {
     def getVar: Symbol = {
       return `var`
     }
@@ -476,39 +295,21 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val `var`: Symbol = null
   }
 
-  class IncrDepth extends Statement {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class IncrDepth(pos: Position) extends Statement {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
 
-  class DecrDepth extends Statement {
-    def this(pos: Position) {
-      this()
-      `super`(pos)
-    }
-
+  case class DecrDepth(pos: Position) extends Statement {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
 
-  class RewindCursor extends Statement {
-    def this(pos: Position, `var`: Symbol) {
-      this()
-      `super`(pos)
-      this.`var` = `var`
-    }
-
+  case class RewindCursor(pos: Position, `var`: Symbol) extends Statement {
     def getVar: Symbol = {
       return `var`
     }
@@ -516,32 +317,20 @@ object Ist {
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val `var`: Symbol = null
   }
 
-  class Loop extends Statement {
-    def this(pos: Position, label: Symbol, statements: Ist.Statement*) {
-      this()
-      `super`(pos)
-      this.label = label
-      this.statements = statements
-    }
-
+  case class Loop(pos: Position, label: Symbol, statements: Ist.Statement*) extends Statement {
     def getLabel: Symbol = {
       return label
     }
 
     def getStatements: Array[Ist.Statement] = {
-      return statements
+      return statements.toArray
     }
 
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
-
-    private final val label: Symbol = null
-    private final val statements: Array[Ist.Statement] = null
   }
 
   abstract class Visitor[R >: Null, C] {
