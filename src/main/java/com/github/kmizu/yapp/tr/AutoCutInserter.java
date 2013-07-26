@@ -28,6 +28,7 @@ import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
+import com.github.kmizu.yapp.util.CollectionUtil;
 
 import static com.github.kmizu.yapp.util.CollectionUtil.*;
 
@@ -45,7 +46,7 @@ public class AutoCutInserter extends Visitor<Expression, AutoCutInserter.Context
   
 
   public Grammar translate(Grammar grammar) {
-    List<Rule> rules = list();
+    List<Rule> rules = CollectionUtil.list();
     Map<Symbol, Expression> mapping = CollectionUtil.map();
     for(Rule r:grammar) {
       mapping.put(r.name(), r.body());
