@@ -123,6 +123,7 @@ object Ast {
 
   abstract class Node {
     def pos: Position
+    def accept[E, T](visitor: Visitor[E, T], context: T): E
   }
 
   case class NonTerminal(pos: Position, name: Symbol, `var`: Symbol) extends Expression {
