@@ -31,7 +31,7 @@ object Ist {
       return pos
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R
 
     private final val pos: Position = null
   }
@@ -83,10 +83,10 @@ object Ist {
         builder.append(LINE_SEPARATOR)
         builder.append(LINE_SEPARATOR)
       }
-      return new String(builder)
+      return new String(builder.toString())
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -128,7 +128,7 @@ object Ist {
       return statement
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -157,7 +157,7 @@ object Ist {
       return code
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -175,7 +175,7 @@ object Ist {
       return code
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -205,7 +205,7 @@ object Ist {
       return statements
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -224,7 +224,7 @@ object Ist {
       return label
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -237,7 +237,7 @@ object Ist {
       `super`(pos)
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
@@ -263,7 +263,7 @@ object Ist {
       return label
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -282,7 +282,7 @@ object Ist {
       return "accept;"
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
@@ -297,7 +297,7 @@ object Ist {
       return "generate_success;"
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
@@ -317,7 +317,7 @@ object Ist {
       return "generate_failure;"
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -340,7 +340,7 @@ object Ist {
       return label
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -374,7 +374,7 @@ object Ist {
       return label
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -395,7 +395,7 @@ object Ist {
       return name
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -408,7 +408,7 @@ object Ist {
       `super`(pos)
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
@@ -453,7 +453,7 @@ object Ist {
       return label
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -473,7 +473,7 @@ object Ist {
       return `var`
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -486,7 +486,7 @@ object Ist {
       `super`(pos)
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
@@ -497,7 +497,7 @@ object Ist {
       `super`(pos)
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
   }
@@ -513,7 +513,7 @@ object Ist {
       return `var`
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -536,7 +536,7 @@ object Ist {
       return statements
     }
 
-    def accept(visitor: Ist.Visitor[R, C], context: C): R = {
+    def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
       return visitor.visit(this, context)
     }
 
@@ -544,90 +544,47 @@ object Ist {
     private final val statements: Array[Ist.Statement] = null
   }
 
-  abstract class Visitor {
-    def visit(node: Ist.Accept, context: C): R = {
-      return null
-    }
+  abstract class Visitor[R >: Null, C] {
+    def visit(node: Ist.Accept, context: C): R = null
 
-    def visit(node: Ist.ActionStatement, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.ActionStatement, context: C): R = null
 
-    def visit(node: Ist.BackupCursor, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.BackupCursor, context: C): R = null
 
-    def visit(node: Ist.Block, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.Block, context: C): R = null
 
-    def visit(node: Ist.DecrDepth, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.DecrDepth, context: C): R = null
 
-    def visit(node: Ist.EscapeFrom, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.EscapeFrom, context: C): R = null
 
-    def visit(node: Ist.Fail, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.Fail, context: C): R = null
 
-    def visit(node: Ist.Function, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.Function, context: C): R = null
 
-    def visit(node: Ist.GenerateSuccess, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.GenerateSuccess, context: C): R = null
 
-    def visit(node: Ist.GenerateFailure, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.GenerateFailure, context: C): R = null
 
-    def visit(node: Ist.IncrDepth, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.IncrDepth, context: C): R = null
 
-    def visit(node: Ist.Loop, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.Loop, context: C): R = null
 
-    def visit(node: Ist.MatchAny, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.MatchAny, context: C): R = null
 
-    def visit(node: Ist.MatchCharClass, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.MatchCharClass, context: C): R = null
 
-    def visit(node: Ist.MatchRule, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.MatchRule, context: C): R = null
 
-    def visit(node: Ist.MatchString, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.MatchString, context: C): R = null
 
-    def visit(node: Ist.NewCursorVar, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.NewCursorVar, context: C): R = null
 
-    def visit(node: Ist.Nop, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.Nop, context: C): R = null
 
-    def visit(node: Ist.ParserUnit, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.ParserUnit, context: C): R = null
 
-    def visit(node: Ist.RewindCursor, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.RewindCursor, context: C): R = null
 
-    def visit(node: Ist.SetSemanticValue, context: C): R = {
-      return null
-    }
+    def visit(node: Ist.SetSemanticValue, context: C): R = null
   }
-
 }
