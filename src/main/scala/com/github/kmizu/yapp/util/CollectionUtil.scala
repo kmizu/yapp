@@ -20,6 +20,11 @@ import com.github.kmizu.yapp.Pair
 object CollectionUtil {
   def list[T](elements: T*): List[T] = new ArrayList[T](Arrays.asList(elements:_*))
 
+  /**
+   * Just for invocation from Java
+   */
+  def list[T](elements: Array[T]): List[T] = list(elements:_*)
+
   def t[A, B](fst: A, snd: B): Pair[A, B] = new Pair[A, B](fst, snd)
 
   def map[K, V](elements: Pair[_ <: K, _ <: V]*): Map[K, V] = {
@@ -28,7 +33,17 @@ object CollectionUtil {
     map
   }
 
+  /**
+   * Just for invocation from Java
+   */
+  def map[K, V](elements: Array[Pair[_ <: K, _ <: V]]): Map[K, V] = map(elements:_*)
+
   def set[T](elements: T*): Set[T] =  new HashSet[T](Arrays.asList(elements:_*))
+
+  /**
+   * Just for invocation from Java
+   */
+  def set[T](elements: Array[T]): Set[T] = set(elements:_*)
 
   def setFrom[T](collection: Collection[_ <: T]): Set[T] = new HashSet[T](collection)
 }
