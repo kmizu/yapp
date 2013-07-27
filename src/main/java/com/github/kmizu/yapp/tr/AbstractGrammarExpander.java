@@ -94,7 +94,7 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
 
   @Override
   public Expression visit(CharClass node, T context) {
-    return new CharClass(node.pos(), node.positive, node.elements, node.var());
+    return new CharClass(node.pos(), node.positive(), node.elements(), node.var());
   }
 
   @Override
