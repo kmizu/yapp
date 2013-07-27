@@ -72,13 +72,13 @@ object Ist {
     }
   }
 
-  case class Function(pos: Position, name: Symbol, `type`: Symbol, code: String, memoized: Boolean, statement: Ist.Statement) extends Node {
+  case class Function(pos: Position, name: Symbol, vtype: Symbol, code: String, memoized: Boolean, statement: Ist.Statement) extends Node {
     def getName: Symbol = {
       return name
     }
 
     def getType: Symbol = {
-      return `type`
+      return vtype
     }
 
     def getCode: String = {
@@ -155,9 +155,9 @@ object Ist {
     }
   }
 
-  case class MatchString(pos: Position, `var`: Ist.Var, value: String, label: Symbol) extends Statement {
+  case class MatchString(pos: Position, variable: Ist.Var, value: String, label: Symbol) extends Statement {
     def getVar: Ist.Var = {
-      return `var`
+      return variable
     }
 
     def getValue: String = {
@@ -207,9 +207,9 @@ object Ist {
     }
   }
 
-  case class MatchAny(pos: Position, `var`: Ist.Var, label: Symbol) extends Statement {
+  case class MatchAny(pos: Position, variable: Ist.Var, label: Symbol) extends Statement {
     def getVar: Ist.Var = {
-      return `var`
+      return variable
     }
 
     def getLabel: Symbol = {
@@ -221,13 +221,13 @@ object Ist {
     }
   }
 
-  case class MatchCharClass(pos: Position, name: Symbol, `var`: Ist.Var, positive: Boolean, label: Symbol) extends Statement {
+  case class MatchCharClass(pos: Position, name: Symbol, variable: Ist.Var, positive: Boolean, label: Symbol) extends Statement {
     def getName: Symbol = {
       return name
     }
 
     def getVar: Ist.Var = {
-      return `var`
+      return variable
     }
 
     def isPositive: Boolean = {
@@ -259,19 +259,19 @@ object Ist {
     }
   }
 
-  case class Var(name: Symbol, `type`: Symbol) {
+  case class Var(name: Symbol, vtype: Symbol) {
     def getName: Symbol = {
       return name
     }
 
     def getType: Symbol = {
-      return `type`
+      return vtype
     }
   }
 
-  case class MatchRule(pos: Position, `var`: Ist.Var, rule: Symbol, label: Symbol) extends Statement {
+  case class MatchRule(pos: Position, variable: Ist.Var, rule: Symbol, label: Symbol) extends Statement {
     def getVar: Ist.Var = {
-      return `var`
+      return variable
     }
 
     def getRule: Symbol = {
@@ -287,9 +287,9 @@ object Ist {
     }
   }
 
-  case class BackupCursor(pos: Position, `var`: Symbol) extends Statement {
+  case class BackupCursor(pos: Position, variable: Symbol) extends Statement {
     def getVar: Symbol = {
-      return `var`
+      return variable
     }
 
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {
@@ -309,9 +309,9 @@ object Ist {
     }
   }
 
-  case class RewindCursor(pos: Position, `var`: Symbol) extends Statement {
+  case class RewindCursor(pos: Position, variable: Symbol) extends Statement {
     def getVar: Symbol = {
-      return `var`
+      return variable
     }
 
     def accept[R, C](visitor: Ist.Visitor[R, C], context: C): R = {

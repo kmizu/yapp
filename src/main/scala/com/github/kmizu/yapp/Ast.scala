@@ -127,21 +127,21 @@ object Ast {
     def accept[E, T](visitor: Visitor[E, T], context: T): E
   }
 
-  case class NonTerminal(pos: Position, name: Symbol, `var`: Symbol) extends Expression {
+  case class NonTerminal(pos: Position, name: Symbol, variable: Symbol) extends Expression {
     def this(pos: Position, name: Symbol) {
       this(pos, name, null)
     }
 
     override def toString: String = {
-      if (`var` != null) `var` + ":" + name.toString else name.toString
+      if (variable != null) variable + ":" + name.toString else name.toString
     }
 
     def accept[E, T](visitor: Visitor[E, T], context: T): E = visitor.visit(this, context)
   }
 
-  case class MacroVariable(pos: Position, name: Symbol, `var`: Symbol) extends Expression {
+  case class MacroVariable(pos: Position, name: Symbol, variable: Symbol) extends Expression {
     override def toString: String = {
-      if (`var` != null) `var` + ":" + name.toString else name.toString
+      if (variable != null) variable + ":" + name.toString else name.toString
     }
 
     def accept[E, T](visitor: Visitor[E, T], context: T): E = visitor.visit(this, context)
@@ -225,7 +225,7 @@ object Ast {
     final val BOUNDED: Int = 1
   }
 
-  case class Rule(pos: Position, flags: Int, name: Symbol, `type`: Symbol, body: Ast.Expression, code: String) extends Node {
+  case class Rule(pos: Position, flags: Int, name: Symbol, vtype: Symbol, body: Ast.Expression, code: String) extends Node {
     override def toString: String = {
       return (if ((flags & Rule.BOUNDED) != 0) "bounded " else "") + name + " = " + body+ " ;"
     }
@@ -250,7 +250,7 @@ object Ast {
     def accept[E, T](visitor: Visitor[E, T], context: T): E = visitor.visit(this, context)
   }
 
-  case class StringLiteral(pos: Position, value: String, `var`: Symbol) extends Terminal {
+  case class StringLiteral(pos: Position, value: String, variable: Symbol) extends Terminal {
     def this(pos: Position, value: String) {
       this(pos, value, null)
     }
@@ -262,7 +262,7 @@ object Ast {
     def accept[E, T](visitor: Visitor[E, T], context: T): E = visitor.visit(this, context)
   }
 
-  case class Wildcard(pos: Position, `var`: Symbol) extends Terminal {
+  case class Wildcard(pos: Position, variable: Symbol) extends Terminal {
     override def toString: String = {
       return "."
     }
@@ -278,15 +278,15 @@ object Ast {
     def accept[E, T](visitor: Visitor[E, T], context: T): E = visitor.visit(this, context)
   }
 
-  case class CharClass(pos: Position, positive: Boolean, elements: List[Ast.CharClassNode], `var`: Symbol) extends Terminal {
+  case class CharClass(pos: Position, positive: Boolean, elements: List[Ast.CharClassNode], variable: Symbol) extends Terminal {
     def this(pos: Position, positive: Boolean, elements: List[Ast.CharClassNode]) {
       this(pos, positive, Collections.unmodifiableList(elements), null)
     }
 
     override def toString: String = {
       val buf: StringBuffer = new StringBuffer
-      if (`var` != null) {
-        buf.append(`var`)
+      if (variable != null) {
+        buf.append(variable)
         buf.append(':')
       }
       buf.append('[')

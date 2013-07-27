@@ -13,7 +13,7 @@ object CommandLineParser {
     case object NONE extends OptionType
   }
 
-  case class Option(key: String, name: String, `type`: CommandLineParser.OptionType, description: String)
+  case class Option(key: String, name: String, vtype: CommandLineParser.OptionType, description: String)
 }
 
 class CommandLineParser {
@@ -23,8 +23,8 @@ class CommandLineParser {
   final val values: List[String] = CollectionUtil.list()
   final val descriptions: List[String] = CollectionUtil.list()
 
-  def opt(key: String, name: String, `type`: CommandLineParser.OptionType, description: String): CommandLineParser = {
-    options.put(name, new CommandLineParser.Option(key, name, `type`, description))
+  def opt(key: String, name: String, vtype: CommandLineParser.OptionType, description: String): CommandLineParser = {
+    options.put(name, new CommandLineParser.Option(key, name, vtype, description))
     descriptions.add(description)
     this
   }
@@ -38,11 +38,11 @@ class CommandLineParser {
 
         if (option == null) {
           values.add(commandLine(i))
-        }else if (option.`type` eq OptionType.NONE) {
+        }else if (option.vtype eq OptionType.NONE) {
           optionValues.put(option.key, new AnyRef)
         } else {
           i += 1
-          option.`type` match {
+          option.vtype match {
             case OptionType.INT =>
               try {
                 optionValues.put(option.key, new java.lang.Integer(Integer.parseInt(commandLine(i))))
