@@ -11,6 +11,7 @@ import com.github.kmizu.yapp.util.SystemProperties
 import java.util.Collections
 import java.util.Iterator
 import java.util.List
+import java.lang.{Iterable => JIterable}
 import scala.beans.BeanProperty
 
 /**
@@ -95,7 +96,7 @@ object Ast {
 
   abstract class Terminal extends Expression
 
-  case class Grammar(pos: Position, @BeanProperty var name: Symbol, macros: List[Ast.MacroDefinition], rules: List[Ast.Rule]) extends Node with java.lang.Iterable[Ast.Rule] {
+  case class Grammar(pos: Position, @BeanProperty var name: Symbol, macros: List[Ast.MacroDefinition], rules: List[Ast.Rule]) extends Node with JIterable[Ast.Rule] {
     def iterator: Iterator[Ast.Rule] = rules.iterator
 
     def setName(name: Symbol): Unit = {
@@ -321,7 +322,7 @@ object Ast {
     def accept[E, T](visitor: Visitor[E, T], context: T): E = visitor.visit(this, context)
   }
 
-  abstract class VarArgExpression extends Expression with Iterable[Ast.Expression] {
+  abstract class VarArgExpression extends Expression with JIterable[Ast.Expression] {
     def body: List[Ast.Expression]
 
     def iterator: Iterator[Ast.Expression] = {
@@ -342,34 +343,34 @@ object Ast {
 
   abstract class Visitor[E >: Null, T] {
     // Definitions
-    def visit(node: Grammar, context: T): E = null
-    def visit(node: MacroDefinition, context: T): E = null
-    def visit(node: Rule, context: T): E = null
+    protected[yapp] def visit(node: Grammar, context: T): E = null
+    protected[yapp] def visit(node: MacroDefinition, context: T): E = null
+    protected[yapp] def visit(node: Rule, context: T): E = null
 
     // Expressions
-    def visit(node: Action, context: T): E = null
-    def visit(node: BoundedExpression, context: T): E = null
-    def visit(node: SetValueAction, context: T): E = null
-    def visit(node: N_Alternation, context: T): E = null
-    def visit(node: N_Sequence, context: T): E = null
-    def visit(node: NonTerminal, context: T): E = null
-    def visit(node: MacroVariable, context: T): E = null
-    def visit(node: MacroCall, context: T): E = null
-    def visit(node: AndPredicate, context: T): E = null
-    def visit(node: NotPredicate, context: T): E = null
-    def visit(node: SemanticPredicate, context: T): E = null
-    def visit(node: Repetition, context: T): E = null
-    def visit(node: RepetitionPlus, context: T): E = null
-    def visit(node: Optional, context: T): E = null
-    def visit(node: StringLiteral, context: T): E = null
-    def visit(node: Wildcard, context: T): E = null
-    def visit(node:CharClass, context: T): E = null
-    def visit(node: Cut, context: T): E = null
-    def visit(node: Fail, context: T): E = null
-    def visit(node: Empty, context: T): E = null
+    protected[yapp] def visit(node: Action, context: T): E = null
+    protected[yapp] def visit(node: BoundedExpression, context: T): E = null
+    protected[yapp] def visit(node: SetValueAction, context: T): E = null
+    protected[yapp] def visit(node: N_Alternation, context: T): E = null
+    protected[yapp] def visit(node: N_Sequence, context: T): E = null
+    protected[yapp] def visit(node: NonTerminal, context: T): E = null
+    protected[yapp] def visit(node: MacroVariable, context: T): E = null
+    protected[yapp] def visit(node: MacroCall, context: T): E = null
+    protected[yapp] def visit(node: AndPredicate, context: T): E = null
+    protected[yapp] def visit(node: NotPredicate, context: T): E = null
+    protected[yapp] def visit(node: SemanticPredicate, context: T): E = null
+    protected[yapp] def visit(node: Repetition, context: T): E = null
+    protected[yapp] def visit(node: RepetitionPlus, context: T): E = null
+    protected[yapp] def visit(node: Optional, context: T): E = null
+    protected[yapp] def visit(node: StringLiteral, context: T): E = null
+    protected[yapp] def visit(node: Wildcard, context: T): E = null
+    protected[yapp] def visit(node:CharClass, context: T): E = null
+    protected[yapp] def visit(node: Cut, context: T): E = null
+    protected[yapp] def visit(node: Fail, context: T): E = null
+    protected[yapp] def visit(node: Empty, context: T): E = null
 
     // Nodes in character classes
-    def visit(node: CharacterElement, context: T): E = null
-    def visit(node: Range, context: T): E = null
+    protected[yapp] def visit(node: CharacterElement, context: T): E = null
+    protected[yapp] def visit(node: Range, context: T): E = null
   }
 }

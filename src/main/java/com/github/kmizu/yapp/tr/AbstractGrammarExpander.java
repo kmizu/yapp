@@ -71,13 +71,13 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
   }
   
   @Override
-  protected Expression visit(Action node, T context) {
+  public Expression visit(Action node, T context) {
     Expression e = node.body().accept(this, context);
     return new Action(node.pos(), e, node.code());
   }
 
   @Override
-  protected Expression visit(N_Alternation node, T context) {
+  public Expression visit(N_Alternation node, T context) {
     List<Expression> es = new ArrayList<Expression>(node.body().size());
     for(Expression e : node) {
       es.add(e.accept(this, context));
@@ -86,44 +86,44 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
   }
 
   @Override
-  protected Expression visit(AndPredicate node, T context) {
+  public Expression visit(AndPredicate node, T context) {
     return new AndPredicate(
       node.pos(), node.body().accept(this, context)
     );
   }
 
   @Override
-  protected Expression visit(CharClass node, T context) {
+  public Expression visit(CharClass node, T context) {
     return new CharClass(node.pos(), node.positive, node.elements, node.var());
   }
 
   @Override
-  protected Expression visit(Cut node, T context) {
+  public Expression visit(Cut node, T context) {
     return new Cut(node.pos());
   }
 
   @Override
-  protected Expression visit(Empty node, T context) {
+  public Expression visit(Empty node, T context) {
     return new Empty(node.pos());
   }
 
   @Override
-  protected Expression visit(Fail node, T context) {
+  public Expression visit(Fail node, T context) {
     return new Fail(node.pos());
   }
 
   @Override
-  protected Expression visit(NonTerminal node, T context) {
+  public Expression visit(NonTerminal node, T context) {
     return new NonTerminal(node.pos(), node.name(), node.var());
   }
   
   @Override
-  protected Expression visit(MacroVariable node, T context) {
+  public Expression visit(MacroVariable node, T context) {
     return new MacroVariable(node.pos(), node.name(), node.var());
   }  
 
   @Override
-  protected Expression visit(MacroCall node, T context) {
+  public Expression visit(MacroCall node, T context) {
     List<Expression> newParams = new ArrayList<Expression>();
     for(Expression param:node.params()) {
       newParams.add(param.accept(this, context));
@@ -132,34 +132,34 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
   }
 
   @Override
-  protected Expression visit(NotPredicate node, T context) {
+  public Expression visit(NotPredicate node, T context) {
     return new NotPredicate(
       node.pos(), node.body().accept(this, context)
     );
   }
 
   @Override
-  protected Expression visit(Optional node, T context) {
+  public Expression visit(Optional node, T context) {
     return new Optional(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(Repetition node, T context) {
+  public Expression visit(Repetition node, T context) {
     return new Repetition(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(RepetitionPlus node, T context) {
+  public Expression visit(RepetitionPlus node, T context) {
     return new RepetitionPlus(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(SemanticPredicate node, T context) {
+  public Expression visit(SemanticPredicate node, T context) {
     return new SemanticPredicate(node.pos(), node.predicate());
   }
   
   @Override
-  protected Expression visit(N_Sequence node, T context) {
+  public Expression visit(N_Sequence node, T context) {
     List<Expression> es = new ArrayList<Expression>(node.body().size());
     for(Expression e : node) {
       es.add(accept(e, context));
@@ -168,19 +168,19 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
   }
 
   @Override
-  protected Expression visit(SetValueAction node, T context) {
+  public Expression visit(SetValueAction node, T context) {
     return new SetValueAction(
       node.pos(), node.body().accept(this, context), node.code()
     );
   }
 
   @Override
-  protected Expression visit(StringLiteral node, T context) {
+  public Expression visit(StringLiteral node, T context) {
     return new StringLiteral(node.pos(), node.value(), node.var());
   }
 
   @Override
-  protected Expression visit(Wildcard node, T context) {
+  public Expression visit(Wildcard node, T context) {
     return new Wildcard(node.pos(), node.var());
   }
 }
