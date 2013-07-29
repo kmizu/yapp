@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.kmizu.yapp.Ast;
+import com.github.kmizu.yapp.Pair;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
 import com.github.kmizu.yapp.Ast.AndPredicate;
@@ -27,11 +28,12 @@ import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
+import com.github.kmizu.yapp.util.CollectionUtil;
 
 import static com.github.kmizu.yapp.util.CollectionUtil.*;
 
 public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutInserterUsingFirstSet.Context>
-  implements Translator<Ast.Grammar, Ast.Grammar> {  
+  implements Translator<Ast.Grammar, Ast.Grammar> {
   static final class Context {
     Map<Symbol, Expression> bindings;
     Set<Expression> nul;
@@ -45,21 +47,21 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
       this.nul = nul;
       this.finite = finite;
       this.firstSet = new FirstSetCollector(bindings, nul, fail);
-    }    
+    }
   }
-  
+
   private final int limit;
-  
+
   public AutoCutInserterUsingFirstSet(int limit) {
     this.limit = limit;
   }
 
   public Grammar translate(Grammar from) {
-    List<Rule> rules = list();
+    List<Rule> rules = CollectionUtil.list(new Rule[0]);
     Set<Expression> nul = new NulExpressionCollector().translate(from);
     Set<Expression> fail = new FailExpressionCollector().translate(from);
     Set<Expression> finite = new FiniteLengthExpressionCollector().translate(from);
-    Map<Symbol, Expression> mapping = CollectionUtil.map();
+    Map<Symbol, Expression> mapping = CollectionUtil.map((Pair<Symbol, Expression>[])(new Pair[0]));
     for(Rule r:from) {
       mapping.put(r.name(), r.body());
     }
@@ -70,7 +72,7 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
           r.pos(),
           r.flags(),
           r.name(),
-          r.type(),
+          r.vtype(),
           accept(r.body(), context),
           r.code()
         )
@@ -80,37 +82,37 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
   }
 
   @Override
-  protected Expression visit(Action node, Context context) {
+  public Expression visit(Action node, Context context) {
     return new Action(node.pos(), accept(node.body(), context), node.code());
   }
 
   @Override
-  protected Expression visit(AndPredicate node, Context context) {
+  public Expression visit(AndPredicate node, Context context) {
     return new AndPredicate(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(CharClass node, Context context) {
+  public Expression visit(CharClass node, Context context) {
     return node;
   }
 
   @Override
-  protected Expression visit(Cut node, Context context) {
+  public Expression visit(Cut node, Context context) {
     return node;
   }
 
   @Override
-  protected Expression visit(Empty node, Context context) {
+  public Expression visit(Empty node, Context context) {
     return node;
   }
 
   @Override
-  protected Expression visit(Fail node, Context context) {
+  public Expression visit(Fail node, Context context) {
     return node;
   }
-  
+
   @Override
-  protected Expression visit(N_Alternation node, Context context) {
+  public Expression visit(N_Alternation node, Context context) {
     List<Expression> body = node.body();
     List<Expression> result = list();
     //Because a FirstSetCollector computes FIRST set using AST node's identity,
@@ -146,9 +148,9 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
     result.add(accept(body.get(body.size() - 1), context));
     return new N_Alternation(node.pos(), result);
   }
-  
+
   @Override
-  protected Expression visit(N_Sequence node, Context context) {    
+  public Expression visit(N_Sequence node, Context context) {
     List<Expression> result = list();
     for(Expression e:node){
       result.add(e.accept(this, context));
@@ -157,52 +159,52 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
   }
 
   @Override
-  protected Expression visit(NonTerminal node, Context context) {
+  public Expression visit(NonTerminal node, Context context) {
     return node;
   }
 
   @Override
-  protected Expression visit(NotPredicate node, Context context) {
+  public Expression visit(NotPredicate node, Context context) {
     return new NotPredicate(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(Optional node, Context context) {
+  public Expression visit(Optional node, Context context) {
     return new Optional(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(Repetition node, Context context) {
+  public Expression visit(Repetition node, Context context) {
     return new Repetition(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(RepetitionPlus node, Context context) {
+  public Expression visit(RepetitionPlus node, Context context) {
     return new RepetitionPlus(node.pos(), accept(node.body(), context));
   }
 
   @Override
-  protected Expression visit(SemanticPredicate node, Context context) {
+  public Expression visit(SemanticPredicate node, Context context) {
     return node;
   }
 
   @Override
-  protected Expression visit(SetValueAction node, Context context) {
+  public Expression visit(SetValueAction node, Context context) {
     return new SetValueAction(
       node.pos(), accept(node.body(), context), node.code()
     );
   }
 
   @Override
-  protected Expression visit(StringLiteral node, Context context) {
+  public Expression visit(StringLiteral node, Context context) {
     return node;
   }
 
   @Override
-  protected Expression visit(Wildcard node, Context context) {
+  public Expression visit(Wildcard node, Context context) {
     return node;
   }
-  
+
   /**
    * Check whether e1 is prefix of e2 or not.
    * @param e1
@@ -245,10 +247,10 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
       return true;
     }else throw new AssertionError("should not reach here");
   }
-  
+
   public static boolean isEqual(char codePoint, CharClass c) {
     return c.positive
-         && c.elements.size() == 1 
+         && c.elements.size() == 1
          && c.elements.get(0) instanceof CharClass.Char
          && codePoint == ((CharClass.Char)c.elements.get(0)).value;
   }
@@ -275,7 +277,7 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
     }
     return c.positive == contained;
   }
-  
+
   private static Set<String> toStringSet(Set<Expression> es) {
     Set<String> s = CollectionUtil.set();
     for(Expression e:es) {
@@ -295,9 +297,9 @@ public class AutoCutInserterUsingFirstSet extends Visitor<Expression, AutoCutIns
     }
     return s;
   }
-  
+
   static final Set<String> ALPHABETS = CollectionUtil.set();
-  static { 
+  static {
     for(int i = 0; i <= Character.MAX_VALUE; i++) {
       ALPHABETS.add(Character.toString((char)i));
     }

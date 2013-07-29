@@ -372,5 +372,7 @@ object Ast {
     // Nodes in character classes
     protected[yapp] def visit(node: CharacterElement, context: T): E = null
     protected[yapp] def visit(node: Range, context: T): E = null
+
+    def accept(node: Node, context: T): E =  node.accept(this, context)
   }
 }

@@ -36,21 +36,21 @@ import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
 
-public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T> 
+public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
   implements Translator<Grammar, Grammar> {
-  
+
   public Grammar translate(Grammar from) {
     return expand(from);
   }
-  
+
   public Grammar expand(Grammar node) {
     return expand(node, newContext());
   }
-  
+
   public T newContext() {
     return null;
   }
-  
+
   public Grammar expand(Grammar node, T context) {
     List<Rule> rules = new ArrayList<Rule>(node.getRules().size());
     for(Rule rule : node) {
@@ -59,17 +59,17 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
     }
     return new Grammar(node.pos(), node.name(), node.macros(), rules);
   }
-  
+
   public Rule expand(Rule node, T context) {
     Expression e = node.body().accept(this, context);
-    return new Rule(node.pos(), node.flags(), node.name(), node.type(), e, node.code());
+    return new Rule(node.pos(), node.flags(), node.name(), node.vtype(), e, node.code());
   }
-  
+
   public MacroDefinition expand(MacroDefinition node, T context) {
     Expression e = node.body().accept(this, context);
     return new MacroDefinition(node.pos(), node.name(), node.formalParams(), e);
   }
-  
+
   @Override
   public Expression visit(Action node, T context) {
     Expression e = node.body().accept(this, context);
@@ -94,7 +94,7 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
 
   @Override
   public Expression visit(CharClass node, T context) {
-    return new CharClass(node.pos(), node.positive(), node.elements(), node.var());
+    return new CharClass(node.pos(), node.positive(), node.elements(), node.variable());
   }
 
   @Override
@@ -114,13 +114,13 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
 
   @Override
   public Expression visit(NonTerminal node, T context) {
-    return new NonTerminal(node.pos(), node.name(), node.var());
+    return new NonTerminal(node.pos(), node.name(), node.variable());
   }
-  
+
   @Override
   public Expression visit(MacroVariable node, T context) {
-    return new MacroVariable(node.pos(), node.name(), node.var());
-  }  
+    return new MacroVariable(node.pos(), node.name(), node.variable());
+  }
 
   @Override
   public Expression visit(MacroCall node, T context) {
@@ -157,7 +157,7 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
   public Expression visit(SemanticPredicate node, T context) {
     return new SemanticPredicate(node.pos(), node.predicate());
   }
-  
+
   @Override
   public Expression visit(N_Sequence node, T context) {
     List<Expression> es = new ArrayList<Expression>(node.body().size());
@@ -176,11 +176,11 @@ public abstract class AbstractGrammarExpander<T> extends Visitor<Expression, T>
 
   @Override
   public Expression visit(StringLiteral node, T context) {
-    return new StringLiteral(node.pos(), node.value(), node.var());
+    return new StringLiteral(node.pos(), node.value(), node.variable());
   }
 
   @Override
   public Expression visit(Wildcard node, T context) {
-    return new Wildcard(node.pos(), node.var());
+    return new Wildcard(node.pos(), node.variable());
   }
 }
