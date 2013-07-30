@@ -36,13 +36,9 @@ object Regex {
    */
   case class Repetition(body: Regex.Expression) extends Expression {
 
-    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return "(" + body + "*)"
-    }
+    override def toString: String = "(" + body + "*)"
   }
 
   /**
@@ -51,13 +47,9 @@ object Regex {
    *
    */
   case class Alternation(lhs: Regex.Expression, rhs: Regex.Expression) extends BinaryExpression {
-    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return "(" + lhs + "|" + rhs + ")"
-    }
+    override def toString: String =  "(" + lhs + "|" + rhs + ")"
   }
 
   /**
@@ -67,13 +59,9 @@ object Regex {
    */
   case class Sequence(lhs: Regex.Expression, rhs: Regex.Expression) extends BinaryExpression {
 
-    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return (lhs.toString + rhs.toString)
-    }
+    override def toString: String = (lhs.toString + rhs.toString)
   }
 
   /**
@@ -82,13 +70,9 @@ object Regex {
    *
    */
   class All extends Expression {
-    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return "."
-    }
+    override def toString: String = "."
   }
 
   /**
@@ -97,13 +81,9 @@ object Regex {
    *
    */
   class Empty extends Expression {
-    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return ""
-    }
+    override def toString: String = ""
   }
 
   /**
@@ -117,9 +97,8 @@ object Regex {
 
     def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return "" + chr
-    }
+    override def toString: String =  "" + chr
+
   }
 
   /**
@@ -135,7 +114,7 @@ object Regex {
     def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
     override def toString: String = {
-      val buf: StringBuffer = new StringBuffer
+      val buf = new StringBuffer
       buf.append('[')
       if (not) {
         buf.append('^')
@@ -145,7 +124,7 @@ object Regex {
         buf.append(c)
       }
       buf.append(']')
-      return new String(buf)
+      new String(buf)
     }
   }
 
@@ -157,13 +136,9 @@ object Regex {
       this()
     }
 
-    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = {
-      return visitor.visit(this, context)
-    }
+    def accept[C, R](visitor: Regex.Visitor[C, R], context: C): R = visitor.visit(this, context)
 
-    override def toString: String = {
-      return "_|_"
-    }
+    override def toString: String =  "_|_"
   }
 
   /**

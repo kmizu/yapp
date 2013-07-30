@@ -16,26 +16,27 @@ object Regex2Dfa {
 class Regex2Dfa private() extends Regex.Visitor[Automata.Nfa, Pair[Integer, Integer]] {
 
   def compile(expression: Regex.Expression): Automata.Dfa = {
-    if (expression eq Regex.ERROR) return Automata.Dfa.ERROR
-    val nfa: Automata.Nfa = compileToNfa(expression)
-    Automata.fromNfa2Dfa(nfa)
+    if (expression eq Regex.ERROR) {
+      Automata.Dfa.ERROR
+    } else {
+      Automata.fromNfa2Dfa(compileToNfa(expression))
+    }
   }
 
   private def compileToNfa(expression: Regex.Expression): Automata.Nfa = {
-    val nfa: Automata.Nfa = new Automata.Nfa
-    val result: Pair[Integer, Integer] = expression.accept(this, nfa)
+    val nfa = new Automata.Nfa
+    val result = expression.accept(this, nfa)
     nfa.startNum = result.fst
     nfa.finalNum = result.snd
     nfa
   }
 
   protected override def visit(expression: Regex.All, context: Automata.Nfa): Pair[Integer, Integer] = {
-    val startNum: Int = context.addState
-    val finalNum: Int = context.addState
-    var i: Int = 0
-    while (i < Automata.NUM_ALPHABETS) {
+    val startNum = context.addState
+    val finalNum = context.addState
+
+    for(i <- 0 until Automata.NUM_ALPHABETS) {
       context.addTransition(startNum, i.asInstanceOf[scala.Char], finalNum)
-      i += 1
     }
     Pair.make(startNum, finalNum)
   }
@@ -45,6 +46,7 @@ class Regex2Dfa private() extends Regex.Visitor[Automata.Nfa, Pair[Integer, Inte
     val finalNum = context.addState
     val resultL = expression.lhs.accept(this, context)
     val resultR = expression.rhs.accept(this, context)
+
     context.addEpsilon(startNum, resultL.fst)
     context.addEpsilon(startNum, resultR.fst)
     context.addEpsilon(resultL.snd, finalNum)
@@ -55,6 +57,7 @@ class Regex2Dfa private() extends Regex.Visitor[Automata.Nfa, Pair[Integer, Inte
   protected override def visit(expression: Regex.Char, context: Automata.Nfa): Pair[Integer, Integer] = {
     val startNum = context.addState
     val finalNum= context.addState
+
     context.addTransition(startNum, expression.getChar, finalNum)
     Pair.make(startNum, finalNum)
   }
@@ -63,20 +66,19 @@ class Regex2Dfa private() extends Regex.Visitor[Automata.Nfa, Pair[Integer, Inte
     val startNum = context.addState
     val finalNum = context.addState
 
-    var i: Int = 0
-    while (i < Automata.NUM_ALPHABETS) {
+    for(i <- 0 until Automata.NUM_ALPHABETS) {
       if (expression.isNot != expression.getChars.contains(i.asInstanceOf[scala.Char])) {
         context.addTransition(startNum, i.asInstanceOf[scala.Char], finalNum)
       }
-      i += 1
     }
 
     Pair.make(startNum, finalNum)
   }
 
   protected override def visit(expression: Regex.Empty, context: Automata.Nfa): Pair[Integer, Integer] = {
-    val startNum= context.addState
-    val finalNum= context.addState
+    val startNum = context.addState
+    val finalNum = context.addState
+
     context.addEpsilon(startNum, finalNum)
     Pair.make(startNum, finalNum)
   }
@@ -85,6 +87,7 @@ class Regex2Dfa private() extends Regex.Visitor[Automata.Nfa, Pair[Integer, Inte
     val startNum = context.addState
     val finalNum = context.addState
     val result = expression.body.accept(this, context)
+
     context.addEpsilon(startNum, result.fst)
     context.addEpsilon(startNum, finalNum)
     context.addEpsilon(result.snd, result.fst)
