@@ -17,7 +17,7 @@ scalacOptions ++= Seq("-deprecation","-unchecked")
 
 testOptions += Tests.Argument(TestFrameworks.Specs2, "console", "junitxml")
 
-seq(ScctPlugin.instrumentSettings:_*)
+seq(sbt.scct.ScctPlugin.instrumentSettings:_*)
 
 initialCommands in console += {
   Iterator().map("import "+).mkString("\n")
