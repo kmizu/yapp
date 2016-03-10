@@ -1,0 +1,31 @@
+module jp.gr.java_conf.mizu.yapp.benchmark.parser.RatsJSONParser;
+
+public void JSON = S Object EOT;
+void Object = LBRACE RBRACE / LBRACE Members RBRACE;
+void Members = Pair (COMMA Pair)* ;
+void Pair = String COLON Value ;
+void Array = LBRACKET RBRACKET / LBRACKET Elements RBRACKET ;
+void Elements = Value (COMMA Value)* ;
+void Value = String / Number / Object / Array / TRUE / FALSE / NULL ;
+void String = ("\"\"" / "\"" CHAR+ "\"") S ;
+void CHAR = (!(["\\]) _) / "\\" [\\"/bfnrt] / "u" HEX HEX HEX HEX ;
+void HEX = [0-9a-fA-F] ;
+void Number = (INT FRAC EXP / INT EXP / INT FRAC / INT) S ;
+void INT = ("-")? ([1-9] [0-9]* / "0") ;
+void FRAC = "." [0-9]+ ;
+void EXP = E [0-9]+ ;
+transient void E = "e+" / "e-" / "E+" / "E-" / "e" / "E" ;
+transient void TRUE = "true" S ;
+transient void FALSE = "false" S ;
+transient void NULL = "null" S ;
+transient void COMMA = "," S ;
+transient void COLON = ":" S ;
+transient void LBRACE = "{" S ;
+transient void RBRACE = "}" S ;
+transient void LBRACKET = "[" S ;
+transient void RBRACKET = "]" S ;
+void S = ( [ \f\t\r\n]+
+       / "/*" (!"*/" _)* "*/"
+       / "//" (![\r\n] _)* [\r\n]
+       )* ;
+void EOT = !_ ;       

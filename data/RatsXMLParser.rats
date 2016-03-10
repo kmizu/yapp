@@ -1,0 +1,32 @@
+module jp.gr.java_conf.mizu.yapp.benchmark.parser.RatsXMLParser;
+
+public void Document = prolog Element Misc* EOT;
+
+void prolog 	           = XMLDecl? Misc* ;
+void XMLDecl 	           = "<?xml" VersionInfo EncodingDecl? S? "?>" ;
+void VersionInfo 	       = S "version" Eq ("'" VersionNum "'" / "\"" VersionNum "\"") ;
+void Eq                  = S? "=" S? ;
+void VersionNum 	       = ([a-zA-Z0-9_.:] / "-")+ ;
+void Misc 	             = COMMENT / S ;
+void EncodingDecl 	     = S "encoding" Eq ("'" EncName "'" / "\"" EncName "\"") ;
+transient void EncName   = [A-Za-z] ([A-Za-z0-9._] / "-")* ;
+
+void S                   = (" " / "\t" / "\r" / "\n")+ ;
+transient void LETTER    = [a-zA-Z] ;
+transient void DIGIT     = [0-9] ;
+transient void NAME_CHAR = LETTER / DIGIT / "." / "-" / "_" / ":" ;
+transient void NAME      = (LETTER / "_" / ":") NAME_CHAR* ;
+void ENTITY_REF          = "&" NAME ";" ;
+void CHAR_REF 	         = "&#x" [0-9a-fA-F]+ ";" / "&#" [0-9]+ ";" ;
+void REFERENCE 	         = 	ENTITY_REF / CHAR_REF ;
+void EOT                 = !_ ;
+transient void COMMENT   = "<!--" (![\-] _ / "-" ![\-] _)* "-->" ;
+void ATT_VALUE 	         = "\"" (![<&"] _ / REFERENCE)* "\""
+			                   / "'"  (![<&'] _ / REFERENCE)* "'" ;
+void CHAR_DATA 	         = (![<&] _)+ ;
+void Attribute           = NAME S? "=" S? ATT_VALUE ;
+void Element             = "<" NAME (S Attribute)* S? (
+                             ">" Content  "</" NAME S? ">" 
+                           / "/>"
+                           ) ;
+void Content             = (!("</") (&("<!--") COMMENT / &("<") Element / REFERENCE / CHAR_DATA))* ;

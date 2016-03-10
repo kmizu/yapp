@@ -1,0 +1,59 @@
+module jp.gr.java_conf.mizu.yapp.benchmark.parser.RatsESLLParser;
+
+public void program = S declaration+ EOT;
+void declaration = functionDeclaration / variableDeclaration;
+void variableDeclaration = VAR IDENT_S (SEMI / LN);
+void functionDeclaration = FUN IDENT LPAREN (IDENT (COMMA IDENT)*)? RPAREN LB statement* RB;
+void block = LB statement* RB;
+void statement = PRINT LPAREN expression RPAREN_S (SEMI / LN)
+               / block
+               / ifStatement
+               / expression (SEMI / LN);
+void ifStatement = IF LPAREN expression RPAREN statement (ELSE statement)?;
+void expression = comparative (EQ expression)?;
+void comparative = additive( EQEQ additive
+                 / NOTEQEQ additive
+                 / GTE additive
+                 / LTE additive
+                 / GT additive
+                 / LT additive
+                 )*;
+void additive  = multitive (PLUS multitive / MINUS multitive)*;
+void multitive = primary (ASTER primary / SLASH primary)*;
+void primary = LPAREN expression RPAREN_S / STRING 
+             / IDENT LPAREN (expression (COMMA expression)*)? RPAREN_S
+             / IDENT_S / NUMBER;
+void KEYWORD = ("print" / "if" / "else" / "fun" / "var") !([a-zA-Z0-9_$]);
+void S = (" " / "\t" / "\r" / "\n")* ;
+void ST = (" " / "\t")* ;
+void LN = ("\r\n" / "\r" / "\n") S;
+void FUN = "fun" !LetterOrDigit S;
+void VAR = "var" !LetterOrDigit S;
+void LetterOrDigit = [a-zA-Z0-9_$];
+void PRINT = "print" !LetterOrDigit S;
+void IF = "if" !LetterOrDigit S;
+void ELSE = "else" !LetterOrDigit S;
+void STRING = "\"" ("#{" expression "}" / "\\" ["\\nrtbf'] / (!["\\\n\r] _))* "\"" ST;
+void COMMA = "," S;
+void SEMI = ";" S;
+void LB = "{" S;
+void RB = "}" S;
+void LPAREN = "(" S;
+void RPAREN = ")" S;
+void RPAREN_S = ")" ST;
+void EQ = "=" S;
+void PLUS = "+" S;
+void MINUS = "-" S;
+void ASTER = "*" S;
+void SLASH = "/" S;
+void LT = "<" S;
+void GT = ">" S;
+void LTE = "<=" S;
+void GTE = ">=" S;
+void EQEQ = "==" S;
+void NOTEQEQ = "=" S;
+
+void NUMBER = [0-9]+ ST;
+void IDENT = !(KEYWORD) [a-zA-Z_][a-zA-Z0-9_]* S;
+void IDENT_S = !(KEYWORD) [a-zA-Z_][a-zA-Z0-9_]* ST;
+void EOT = !_;

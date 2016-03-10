@@ -1,0 +1,59 @@
+macro $key(#K) = #K !([a-zA-Z0-9_$]) S;
+macro $sep(#K) = #K S;
+macro $special(#K) = #K ST;
+
+program = S declaration+ EOT;
+declaration = functionDeclaration / variableDeclaration;
+variableDeclaration = VAR IDENT_S (SEMI / LN);
+functionDeclaration = FUN IDENT LPAREN (IDENT (COMMA IDENT)*)? RPAREN LB statement* RB;
+block = LB statement* RB;
+statement = PRINT LPAREN expression RPAREN_S (SEMI / LN)
+          / block
+          / ifStatement
+          / expression (SEMI / LN);
+ifStatement = IF LPAREN expression RPAREN statement (ELSE statement)?;
+expression = comparative (EQ expression)?;
+comparative = additive( EQEQ additive
+                      / NOTEQEQ additive
+                      / GTE additive
+                      / LTE additive
+                      / GT additive
+                      / LT additive
+                      )*;
+additive  = multitive (PLUS multitive / MINUS multitive)*;
+multitive = primary (ASTER primary / SLASH primary)*;
+primary = LPAREN expression RPAREN_S / STRING 
+        / IDENT LPAREN (expression (COMMA expression)*)? RPAREN_S
+        / IDENT_S / NUMBER;
+KEYWORD = ("print" / "if" / "else" / "fun" / "var") !([a-zA-Z0-9_$]);
+S = (" " / "\t" / "\r" / "\n")* ;
+ST = (" " / "\t")* ;
+LN = ("\r\n" / "\r" / "\n") S;
+FUN = $key("fun");
+PRINT = $key("print");
+IF = $key("if");
+ELSE = $key("else");
+VAR = $key("var");
+STRING = $special("\"" ("#{" expression "}" / "\\" ["\\nrtbf'] / [^"\\\n\r])* "\"");
+COMMA = $sep(",");
+SEMI = $sep(";");
+LB = $sep("{");
+RB = $sep("}");
+LPAREN = $sep("(");
+RPAREN = $sep(")");
+RPAREN_S = $special(")");
+EQ = $sep("=");
+PLUS = $sep("+");
+MINUS = $sep("-");
+ASTER = $sep("*");
+SLASH = $sep("/");
+LT = $sep("<");
+GT = $sep(">");
+LTE = $sep("<=");
+GTE = $sep(">=");
+EQEQ = $sep("==");
+NOTEQEQ = $sep("=");
+NUMBER = $special([0-9]+);
+IDENT = $sep(!(KEYWORD) [a-zA-Z_][a-zA-Z0-9_]*);
+IDENT_S = $special(!(KEYWORD) [a-zA-Z_][a-zA-Z0-9_]*);
+EOT = !_;

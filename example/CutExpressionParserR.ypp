@@ -1,0 +1,32 @@
+Integer statement <[ Integer n = null; ]> = spacing n:expression spacing ^ ";" %{n} ;
+
+Integer expression <[ Integer n = null; ]> = n:additive %{n} ;
+
+Integer additive <[ Integer l = null, r = null; ]> = 
+  l:multitive
+  ( ( spacing "+" ^ spacing r:multitive <[ l = l + r; ]>
+    / spacing "-"   spacing r:multitive <[ l = l - r; ]>
+    ) ^
+  )* %{l}
+  ;
+
+Integer multitive <[ Integer l = null, r = null; ]> =
+  l:primary
+  ( ( spacing "*" ^ spacing r:primary <[ l = l * r; ]>
+    / spacing "/" ^ spacing r:primary <[ l = l / r; ]>
+    / spacing "%"   spacing r:primary <[ l = l % r; ]>
+    ) ^
+  )* %{l}
+  ;
+
+Integer primary <[ String s = null; Integer n = null; ]> = 
+  s:number %{Integer.valueOf(s)} / "(" spacing n:expression spacing ")" %{n}
+  ;
+
+String number <[ StringBuffer s = new StringBuffer(); Character c; ]> = 
+  (c:[0-9] <[ s.append(c); ]>)+ %{new String(s)}
+  ;
+
+spacing  = space* ; 
+
+space = " " / "\t" / "\r" / "\n" ;

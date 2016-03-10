@@ -1,0 +1,5 @@
+Integer S <[ int cnt = 0; ]> = &(A !"b") ("a" <[ cnt++; ]>)+ B !"c" %{cnt} ;
+
+A  = "a" ^ A? "b" ;
+
+B  = "b" ^ B? "c" ;

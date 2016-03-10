@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="build.benchmark" path="src.benchmark"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" output="build.test" path="src.test"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/rats-1.14.3/rats-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/rats-1.14.3/xtc.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>
