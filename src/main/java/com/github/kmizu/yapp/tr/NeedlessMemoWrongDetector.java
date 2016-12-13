@@ -88,7 +88,6 @@ public class NeedlessMemoWrongDetector extends Ast.Visitor<Set<Symbol>, Needless
       {
         nonterminals = union(nonterminals, expressions.get(i).accept(this, context));
       }
-      //カット演算子によってスタックが変化する可能性があるため
       if(context.backtrack.size() == size){
         context.backtrack.pop();
         context.cutUsable.pop();
@@ -197,7 +196,6 @@ public class NeedlessMemoWrongDetector extends Ast.Visitor<Set<Symbol>, Needless
     {
       node.body().accept(this, context);
     }
-    //カット演算子によってスタックが変化する可能性があるため
     if(context.backtrack.size() == size){
       context.backtrack.pop();
       context.cutUsable.pop();

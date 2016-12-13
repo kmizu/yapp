@@ -235,7 +235,6 @@ public class GrammarToIstTranslator extends Ast.Visitor<Ist.Statement, GrammarTo
       context.setCutEnabled(true);
       context.push(failure);
       Ist.Statement body = accept(e, context);
-      //カット演算子によってスタックが変化する可能性があるため
       if(context.isCutEnabled()){
         context.pop();
       }
@@ -326,7 +325,6 @@ public class GrammarToIstTranslator extends Ast.Visitor<Ist.Statement, GrammarTo
     context.setCutEnabled(true);
     context.push(failure);
     Ist.Statement body = node.body().accept(this, context);
-    //カット演算子によってスタックが変化する可能性があるため
     if(context.isCutEnabled()){
       context.pop();
     }

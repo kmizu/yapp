@@ -6,12 +6,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 
- * 単純なアルゴリズムによる、要素数に応じて自動で伸び縮みする配列クラスの実装
- * 
  * @author Kota Mizushima
  *
- * @param <T> 配列の要素型
+ * @param <T>
  */
 @SuppressWarnings(value="unchecked")
 public class SimpleSpreadArray<T> implements SpreadArray<T> {
@@ -21,16 +18,10 @@ public class SimpleSpreadArray<T> implements SpreadArray<T> {
   private int increasing;
   private int size;
   
-  /**
-   * 要素数に応じて自動で伸び縮みする配列を生成します。
-   */
   public SimpleSpreadArray() {
     this(DEFAULT_INITIAL_CAPACITY);
   }
   
-  /**
-   * 要素数に応じて自動で伸び縮みする配列を生成します。
-   */
   public SimpleSpreadArray(int capacity) {
     elements = new Object[capacity];
     increasing = DEFAULT_INCREASING;

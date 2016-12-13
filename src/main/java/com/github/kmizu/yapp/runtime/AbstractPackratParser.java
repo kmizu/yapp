@@ -80,11 +80,6 @@ public abstract class AbstractPackratParser<T> {
     }
   }
 
-  /**
-   * 解析対象のデータのインデックスposに対応する位置を返します。
-   * @param pos データのインデックス
-   * @return ソースコード上の位置
-   */
   protected final Location getLocation(int pos){
     assert pos >= baseIndex : "pos must be >= baseIndex";
     return memo_location.get(realIndex(pos));
@@ -184,17 +179,4 @@ public abstract class AbstractPackratParser<T> {
     if(loc == null) loc = new Location(lastLine, lastColumn);
     return new Result<T>(pos, null, new ParseError(loc, message), new Exception());
   }
-
-  /* TODO 実装を変更する
-  @SuppressWarnings(value="unchecked")
-  protected Result<String> match(int pos, Pattern charClass){
-    if(pos >= input.length()) return Result.FAIL;
-    Matcher matcher = charClass.matcher(input.substring(pos));
-    if(!matcher.lookingAt()){
-      return Result.FAIL;
-    }
-    String str = matcher.group();
-    return new Result<String>(pos + str.length(), str);
-  }
-  */
 }
