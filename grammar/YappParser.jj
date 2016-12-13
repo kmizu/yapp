@@ -89,7 +89,7 @@ public class YappParser {
         char rangeE = text.charAt(i + 2);
         if(rangeS > rangeE){
           throw new ParseException(
-            pos.getLine() + ": range start must be < range end"
+            pos.line() + ": range start must be < range end"
           );
         }
         elements.add(new CharClass.Range(rangeS, rangeE));
