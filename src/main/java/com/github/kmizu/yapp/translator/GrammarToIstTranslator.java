@@ -115,7 +115,7 @@ public class GrammarToIstTranslator extends Ast.Visitor<Ist.Statement, GrammarTo
     public void setCurrentRuleName(Symbol currentRuleName) {
       this.currentRuleName = currentRuleName;
       this.failures = new Stack<Symbol>();
-      this.symgen = new SymbolGenerator(currentRuleName.getKey().toUpperCase());
+      this.symgen = new SymbolGenerator(currentRuleName.key().toUpperCase());
       this.vargen = new SymbolGenerator("var");
     }
 
