@@ -7,8 +7,8 @@ public class SemanticException extends RuntimeException {
   
   public SemanticException(Position pos, String message) {
     super(message);
-    this.line   = pos.getLine();
-    this.column = pos.getColumn();
+    this.line   = pos.line();
+    this.column = pos.column();
   }
   
   public String getErrorMessage() {

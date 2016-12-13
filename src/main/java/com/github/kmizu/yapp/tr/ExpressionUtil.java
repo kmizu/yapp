@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.kmizu.yapp.Ast;
-import com.github.kmizu.yapp.Position;
 import com.github.kmizu.yapp.Ast.CharClass;
-import com.github.kmizu.yapp.Ast.Empty;
 import com.github.kmizu.yapp.Ast.Expression;
-import com.github.kmizu.yapp.Ast.N_Alternation;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Wildcard;
 import com.github.kmizu.yapp.util.CollectionUtil;
+
+import com.github.kmizu.yapp.Position;
 
 public class ExpressionUtil {
 

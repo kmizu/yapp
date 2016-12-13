@@ -3,13 +3,11 @@ package com.github.kmizu.yapp.tr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.github.kmizu.yapp.Ast;
-import com.github.kmizu.yapp.Position;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
 import com.github.kmizu.yapp.Ast.AndPredicate;
@@ -30,13 +28,14 @@ import com.github.kmizu.yapp.Ast.Rule;
 import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
-import com.github.kmizu.yapp.Ast.Terminal;
 import com.github.kmizu.yapp.Ast.Visitor;
 import com.github.kmizu.yapp.Ast.Wildcard;
 import com.github.kmizu.yapp.tr.FirstSetCollector.FirstSetCannotBeComputed;
 import com.github.kmizu.yapp.util.CollectionUtil;
 
 import static com.github.kmizu.yapp.util.CollectionUtil.*;
+
+import com.github.kmizu.yapp.Position;
 
 public class AutoCutInserterUsingFollowSet extends Visitor<Expression, AutoCutInserterUsingFollowSet.Context>
   implements Translator<Ast.Grammar, Ast.Grammar> {  
