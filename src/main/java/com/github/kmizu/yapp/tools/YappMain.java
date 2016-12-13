@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.kmizu.yapp.Ast;
+import com.github.kmizu.yapp.SemanticException;
 import com.github.kmizu.yapp.CompilationException;
 import com.github.kmizu.yapp.Pair;
-import com.github.kmizu.yapp.SemanticException;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Grammar;
 
