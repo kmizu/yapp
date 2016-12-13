@@ -1,4 +1,5 @@
 # YAPP
+[![Build Status](https://travis-ci.org/kmizu/yapp.png?branch=master)](https://travis-ci.org/kmizu/yapp)
 
 YAPP is Yet Another Packrat Parser Generator and provide optimizations that come from Rats! and is based on notion **Cut**.
 
