@@ -8,8 +8,8 @@ import com.github.kmizu.yapp.Symbol;
 public class MemoizedCountPrinter implements
   Translator<Pair<Ast.Grammar, Map<Symbol, Boolean>>, Void> {
   public Void translate(Pair<Ast.Grammar, Map<Symbol, Boolean>> from) {
-    Ast.Grammar g = from.fst;
-    Map<Symbol, Boolean> map = from.snd;
+    Ast.Grammar g = from.fst();
+    Map<Symbol, Boolean> map = from.snd();
     int countMemoized = 0;
     for(Boolean v : map.values()) if(v) countMemoized++;
     System.out.printf("%d --> %d%n", g.getRules().size(), countMemoized);

@@ -154,7 +154,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(Action node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -167,7 +167,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(CharClass node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -175,7 +175,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(Cut node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -183,7 +183,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(Empty node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -191,7 +191,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(Fail node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -199,9 +199,9 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(N_Alternation node, Pair<Expression, Set<Expression>> context) {
     List<Expression> body = node.body();
-    if(body.get(body.size() - 1) == context.fst) {
+    if(body.get(body.size() - 1) == context.fst()) {
       for(Expression e:callersOf(node)){
-        e.accept(this, Pair.make((Expression)node, context.snd));
+        e.accept(this, Pair.make((Expression)node, context.snd()));
       }
     }
     return null;
@@ -210,12 +210,12 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(N_Sequence node, Pair<Expression, Set<Expression>> context) {
     List<Expression> body = node.body();
-    int found = body.indexOf(context.fst);
+    int found = body.indexOf(context.fst());
     if(found < body.size() - 1) {
-      context.snd.add(body.get(found + 1));
+      context.snd().add(body.get(found + 1));
     }else {
       for(Expression e:callersOf(node)){
-        e.accept(this, Pair.make((Expression)node, context.snd));
+        e.accept(this, Pair.make((Expression)node, context.snd()));
       }
     }
     return null;
@@ -226,7 +226,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
     if(visit.contains(node)) return null;
     visit.add(node);
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -264,7 +264,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(SetValueAction node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -272,7 +272,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(StringLiteral node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }
@@ -280,7 +280,7 @@ public class FollowSetCollector extends Visitor<Void, Pair<Expression, Set<Expre
   @Override
   protected Void visit(Wildcard node, Pair<Expression, Set<Expression>> context) {
     for(Expression e:callersOf(node)){
-      e.accept(this, Pair.make((Expression)node, context.snd));
+      e.accept(this, Pair.make((Expression)node, context.snd()));
     }
     return null;
   }

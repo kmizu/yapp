@@ -30,7 +30,7 @@ public class CollectionUtil {
   public static <K, V> Map<K, V> map(Pair<? extends K, ? extends V>... elements) {
     Map<K, V> map = new HashMap<K, V>();
     for(Pair<? extends K, ? extends V> e:elements) {
-      map.put(e.fst, e.snd);
+      map.put(e.fst(), e.snd());
     }
     return map;
   }

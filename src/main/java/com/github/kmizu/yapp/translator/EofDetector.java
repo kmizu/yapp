@@ -70,19 +70,19 @@ public class EofDetector extends Visitor<Boolean, Pair<Boolean, Set<Symbol>>>
   }
   @Override
   protected Boolean visit(NonTerminal node, Pair<Boolean, Set<Symbol>> context) {
-    if(context.snd.contains(node.name())) return false;
+    if(context.snd().contains(node.name())) return false;
     else {
-      context.snd.add(node.name());
+      context.snd().add(node.name());
       Expression body = bindings.get(node.name());
       return body.accept(this, context);
     }
   }
   @Override
   protected Boolean visit(NotPredicate node, Pair<Boolean, Set<Symbol>> context) {
-    if(context.fst) {
+    if(context.fst()) {
       return false;
     }else {
-      return node.body().accept(this, Pair.make(true, context.snd));
+      return node.body().accept(this, Pair.make(true, context.snd()));
     }
   }
   @Override
@@ -114,7 +114,7 @@ public class EofDetector extends Visitor<Boolean, Pair<Boolean, Set<Symbol>>>
   }
   @Override
   protected Boolean visit(Wildcard node, Pair<Boolean, Set<Symbol>> context) {
-    if(context.fst) return true;
+    if(context.fst()) return true;
     else return false;
   }
 }
