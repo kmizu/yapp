@@ -1,7 +1,5 @@
 require 'time'
 
-RATS_DIR = 'lib\rats-1.14.3'
-
 class Performance
   MIN_MEM = 10
   MAX_MEM = 500
@@ -58,11 +56,11 @@ class Performance
 end
 
 class HeapUsage
-  MIN = 2    #-Xmxオプションが2Mより大きい値を要求するため
+  MIN = 2
   MAX = 512
-  BENCHMARK_CLASS = 'jp.gr.java_conf.mizu.yapp.benchmark.ParserBenchmark'
-  PARSER_PACKAGE='jp.gr.java_conf.mizu.yapp.benchmark'
-  CLASSPATH="build;build.benchmark;#{RATS_DIR}\\rats-runtime.jar;#{RATS_DIR}\\xtc.jar"
+  BENCHMARK_CLASS = 'com.github.kmizu.yapp.benchmark.ParserBenchmark'
+  PARSER_PACKAGE='com.github.kmizu.yapp.benchmark'
+  CLASSPATH='target/scala-2.12/classes'
   
   def initialize dir, ext, result_file
     @dir = dir
@@ -110,8 +108,7 @@ puts "ESLL parser heap usage measurement..."
 HeapUsage.new('benchmark/esll', '.esll', 'heap_esll_parser.csv').benchmark([
   ['YappESLLRecognizer', 'NO-CUT'],
   ['YappACESLLRecognizer', 'AUTO'],
-  ['YappOptimizedESLLRecognizer', 'CUT'], 
-  ['RatsESLLRecognizer', 'RATS'], 
+  ['YappOptimizedESLLRecognizer', 'CUT']
 ])
 
 puts "ESLL parser performance measurement..."
@@ -119,6 +116,5 @@ puts "ESLL parser performance measurement..."
 Performance.new('benchmark/esll', '.esll', 'perf_esll_parser.csv').benchmark([
   ['YappESLLRecognizer', 'NO-CUT'],
   ['YappACESLLRecognizer', 'AUTO'],
-  ['YappOptimizedESLLRecognizer', 'CUT'],
-  ['RatsESLLRecognizer', 'RATS'], 
+  ['YappOptimizedESLLRecognizer', 'CUT']
 ])
