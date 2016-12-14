@@ -3,10 +3,6 @@ import Keys._
 import classpath._
 import java.util.jar.{Attributes, Manifest}
 
-lazy val root = Project(
-  id = "root",
-  base = file(".")
-).settings(rootSettings)
 
 def javacc(classpath: Classpath, output: File, logger: Logger): Seq[File] = {
   Fork.java(
@@ -27,12 +23,29 @@ def javacc(classpath: Classpath, output: File, logger: Logger): Seq[File] = {
   (output ** "*.java").get
 }
 
+def yapp(classpath: Classpath, options: List[String], input: File, output: File, logger: Logger): Seq[File] = {
+  Fork.java(
+    ForkOptions(outputStrategy = Some(LoggedOutput(logger))),
+    "-cp" :: Path.makeString(classpath.map(_.data)) ::
+      "com.github.kmizu.yapp.tools.YappMain" ::
+      (options ::: List(input.toString, output.toString))
+  ) match {
+    case exitCode if exitCode != 0 => sys.error("Nonzero exit code returned from javacc: " + exitCode)
+    case 0 =>
+  }
+  (output ** "*.java").get
+}
+
+
 val scaladocBranch = settingKey[String]("branch name for scaladoc -doc-source-url")
 
-lazy val rootSettings = Seq(
+lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",
   scalaVersion := "2.12.1",
-  organization := "com.github.kmizu",
+  organization := "com.github.kmizu"
+)
+
+lazy val rootSettings = Seq(
   name := "yapp",
   libraryDependencies ++= Seq(
     "net.java.dev.javacc" % "javacc" % "5.0",
@@ -40,18 +53,19 @@ lazy val rootSettings = Seq(
     "org.scalatest" %% "scalatest" % "3.0.0" % "test"
   ),
   sourceGenerators in Compile += Def.task {
-    val cp = (externalDependencyClasspath in Test).value
+    val cp = (externalDependencyClasspath in Compile).value
     val dir = (sourceManaged in Compile).value
     val s = streams.value
     val parser = dir / "java" / "com" / "github" / "kmizu" / "yapp" / "parser" / "YappParser.java"
     val grammar = new java.io.File("grammar") / "YappParser.jj"
     val grammarLastModified = grammar.lastModified
-    val parserLastModifier = parser.lastModified
-    if(grammarLastModified > parserLastModifier) {
-      javacc(cp, dir / "java", s.log)
+    val parserLastModified = parser.lastModified
+    if(grammarLastModified > parserLastModified) {
+     javacc(cp, dir / "java", s.log)
     } else {
       (dir / "java" ** "**.java").get
     }
+
   }.taskValue,
   publishMavenStyle := true,
   scaladocBranch := "master",
@@ -112,3 +126,39 @@ lazy val rootSettings = Seq(
   }
 )
 
+lazy val benchmarkSettings = Seq(
+  name := "yapp_benchmark",
+  sourceGenerators in Compile += Def.task {
+    val cp = (dependencyClasspath in Compile).value
+    val dir = (sourceManaged in Compile).value
+    val s = streams.value
+    val parser = dir / "com" / "github" / "kmizu" / "yapp" / "benchmark" / "parser"
+    val pkg = "com.github.kmizu.yapp.benchmark.parser"
+    val input = baseDirectory.value / "grammar"
+    parser.mkdirs()
+    var files: Seq[File] = Seq.empty
+    files ++= yapp(cp, List("--pkg", pkg), input / "JavaRecognizer.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "JavaRecognizer.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedJavaRecognizer.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "XMLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "XMLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedXMLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "JSONParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "JSONParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedJSONParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "ESLLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "ESLLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedESLLParser.ypp", parser, s.log)
+    files
+  }.taskValue
+)
+
+lazy val root = Project(
+  id = "root",
+  base = file(".")
+).settings(commonSettings).settings(rootSettings)
+
+lazy val benchmark = Project(
+  id = "benchmark",
+  base = file("benchmark")
+).settings(commonSettings).dependsOn(root).settings(benchmarkSettings)

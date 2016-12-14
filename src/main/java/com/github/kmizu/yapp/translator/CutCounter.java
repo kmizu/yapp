@@ -17,7 +17,7 @@ public class CutCounter extends IdentityTranslator<Ast.Grammar> {
       }
     };
     from.accept(counter, null);
-    System.err.println("count of cut = " + count[0]);
+    System.out.println("count of cut = " + count[0]);
     return from;
   }
 }

@@ -2,7 +2,6 @@ package com.github.kmizu.yapp.benchmark;
 
 import java.io.Reader;
 
-import com.github.kmizu.esll.parser.ESLLParserByJavaCC;
 import com.github.kmizu.yapp.benchmark.parser.ESLLParser;
 import com.github.kmizu.yapp.benchmark.parser.JSONParser;
 import com.github.kmizu.yapp.benchmark.parser.JavaRecognizer;

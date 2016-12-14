@@ -18,7 +18,6 @@ import com.github.kmizu.yapp.Ast.Grammar;
 import com.github.kmizu.yapp.parser.ParseException;
 import com.github.kmizu.yapp.parser.Token;
 import com.github.kmizu.yapp.tools.CommandLineParser.OptionType;
-import com.github.kmizu.yapp.translator.AstPrinter;
 import com.github.kmizu.yapp.translator.AutoCutInserter;
 import com.github.kmizu.yapp.translator.AutoCutInserterUsingFirstSet;
 import com.github.kmizu.yapp.translator.AutoCutInserterUsingFollowSet;
@@ -141,7 +140,6 @@ public class YappMain {
         .compose(new CutCounter())
         .compose(has("ACfollow") ? new AutoCutInserterUsingFollowSet() : new IdentityTranslator<Grammar>())
         .compose(new CutCounter())
-        .compose(new AstPrinter())
         .compose(new GrammarToIstTranslator(false))
         .compose(new CodeGeneratorFromIst(has("pkg") ? getString("pkg") : null, dstDir, !has("Onj")));        
       compiler.translate(srcFile);
@@ -163,7 +161,6 @@ public class YappMain {
         .compose(new AutoCutInserter())
         .compose(has("edr") ? new DeadRuleEliminator() : new IdentityTranslator<Grammar>())
         .compose(new CutCounter())
-        .compose(new AstPrinter())
         .compose(new VoidTranslator<Ast.Grammar>());
       compiler.translate(srcFile);
     }else if(has("space")) {

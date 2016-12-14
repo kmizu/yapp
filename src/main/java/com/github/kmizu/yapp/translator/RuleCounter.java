@@ -11,7 +11,7 @@ public class RuleCounter extends IdentityTranslator<Ast.Grammar> {
     for(Rule r:from) {
       count++;
     }
-    System.err.println("count of rules = " + count);
+    System.out.println("count of rules = " + count);
     return from;
   }
 }
