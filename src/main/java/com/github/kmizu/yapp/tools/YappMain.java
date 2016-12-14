@@ -97,8 +97,8 @@ public class YappMain {
       generateMain();
       return true;
     }catch(CompilationException ex){
-      if(ex.getReason() instanceof ParseException){
-        ParseException e = (ParseException)ex.getReason();
+      if(ex.reason() instanceof ParseException){
+        ParseException e = (ParseException)ex.reason();
         Token error = e.currentToken.next;
         String expected = e.tokenImage[e.expectedTokenSequences[0][0]];
         System.err.printf(
@@ -106,8 +106,8 @@ public class YappMain {
           error.beginLine, error.beginColumn,
           expected, error
         );
-      }else if(ex.getReason() instanceof SemanticException){
-        SemanticException e = (SemanticException)ex.getReason();
+      }else if(ex.reason() instanceof SemanticException){
+        SemanticException e = (SemanticException)ex.reason();
         System.err.println(e.getErrorMessage());
       }else{
         ex.printStackTrace();
