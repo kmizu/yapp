@@ -133,22 +133,22 @@ lazy val benchmarkSettings = Seq(
     val dir = (sourceManaged in Compile).value
     val s = streams.value
     val parser = dir / "com" / "github" / "kmizu" / "yapp" / "benchmark" / "parser"
-    val pkg = "com.github.kmizu.yapp.benchmark.parser"
+    val packageName = "com.github.kmizu.yapp.benchmark.parser"
     val input = baseDirectory.value / "grammar"
     parser.mkdirs()
     var files: Seq[File] = Seq.empty
-    files ++= yapp(cp, List("--pkg", pkg), input / "JavaRecognizer.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "JavaRecognizer.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedJavaRecognizer.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "XMLParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "XMLParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedXMLParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "JSONParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "JSONParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedJSONParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "ESLLParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "ESLLParser.ypp", parser, s.log)
-    files ++= yapp(cp, List("--pkg", pkg), input / "OptimizedESLLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "JavaRecognizer.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "JavaRecognizer.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "OptimizedJavaRecognizer.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "XMLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "XMLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "OptimizedXMLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "JSONParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "JSONParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "OptimizedJSONParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "ESLLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName, "--pre", "AC", "--ac", "--ACfirst", "-1", "--ACfollow"), input / "ESLLParser.ypp", parser, s.log)
+    files ++= yapp(cp, List("--package", packageName), input / "OptimizedESLLParser.ypp", parser, s.log)
     files
   }.taskValue
 )

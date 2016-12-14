@@ -55,7 +55,7 @@ public class YappMain {
   public YappMain(String... args) throws CommandLineException {    
     parser.opt("pre",      "--pre",      OptionType.STR,  "--pre        specify parser class' prefix")
           .opt("time",     "--time",     OptionType.NONE, "--time       measure time elapsed")
-          .opt("pkg",      "--pkg",      OptionType.STR,  "--pkg        specify parser class' package")
+          .opt("package",  "--package",  OptionType.STR,  "--package    specify parser class' package")
           .opt("pm",       "--pm",       OptionType.NONE, "--pm         print the number of rules that should be memoized")
           .opt("edr",      "--edr",      OptionType.NONE, "--edr        eliminate dead rules")
           .opt("em",       "--em",       OptionType.NONE, "--em        eliminate needless memoizations")
@@ -141,7 +141,7 @@ public class YappMain {
         .compose(has("ACfollow") ? new AutoCutInserterUsingFollowSet() : new IdentityTranslator<Grammar>())
         .compose(new CutCounter())
         .compose(new GrammarToIstTranslator(false))
-        .compose(new CodeGeneratorFromIst(has("pkg") ? getString("pkg") : null, dstDir, !has("Onj")));        
+        .compose(new CodeGeneratorFromIst(has("package") ? getString("package") : null, dstDir, !has("Onj")));        
       compiler.translate(srcFile);
     }else if(has("em")) {   
       Translator<File, Void> compiler = ComposableTranslator.<File>empty()
@@ -187,7 +187,7 @@ public class YappMain {
         .compose(new SyntaxSugarExpander())
         .compose(new RuleCounter())
         .compose(new GrammarToIstTranslator(has("em")))
-        .compose(new CodeGeneratorFromIst(has("pkg") ? getString("pkg") : null, dstDir, !has("onj")));
+        .compose(new CodeGeneratorFromIst(has("package") ? getString("package") : null, dstDir, !has("onj")));
       compiler.translate(srcFile);
     }
     if(has("time")) {
