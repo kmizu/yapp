@@ -1,6 +1,6 @@
 package com.github.kmizu.yapp;
 
-import com.github.kmizu.yapp.Automata.Nfa;
+import com.github.kmizu.yapp.Automata.NFA;
 import com.github.kmizu.yapp.Regex.All;
 import com.github.kmizu.yapp.Regex.Alternation;
 import com.github.kmizu.yapp.Regex.Char;
@@ -9,19 +9,19 @@ import com.github.kmizu.yapp.Regex.Empty;
 import com.github.kmizu.yapp.Regex.Repetition;
 import com.github.kmizu.yapp.Regex.Sequence;
 
-public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer>> {
-  public static final Regex2Dfa INSTANCE = new Regex2Dfa();
-  private Regex2Dfa() {    
+public class Regex2DFA extends Regex.Visitor<NFA, Pair<Integer, Integer>> {
+  public static final Regex2DFA INSTANCE = new Regex2DFA();
+  private Regex2DFA() {
   }
   
-  public Automata.Dfa compile(Regex.Expression expression) {
-    if(expression == Regex.ERROR) return Automata.Dfa.ERROR;
-    Automata.Nfa nfa = compileToNfa(expression);
-    return Automata.fromNfa2Dfa(nfa);
+  public Automata.DFA compile(Regex.Expression expression) {
+    if(expression == Regex.ERROR) return Automata.DFA.ERROR;
+    NFA nfa = compileToNfa(expression);
+    return Automata.fromNFA2DFA(nfa);
   }
   
-  private Automata.Nfa compileToNfa(Regex.Expression expression) {
-    Automata.Nfa nfa = new Automata.Nfa();
+  private NFA compileToNfa(Regex.Expression expression) {
+    NFA nfa = new NFA();
     Pair<Integer, Integer> result = expression.accept(this, nfa);
     nfa.startNum = result.fst();
     nfa.finalNum = result.snd();
@@ -29,7 +29,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(All expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(All expression, NFA context) {
     int startNum = context.addState();
     int finalNum = context.addState();
     for(int i = 0; i < Automata.NUM_ALPHABETS; i++) {
@@ -39,7 +39,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(Alternation expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(Alternation expression, NFA context) {
     int startNum = context.addState();
     int finalNum = context.addState();
     Pair<Integer, Integer> resultL = expression.lhs.accept(this, context);
@@ -53,7 +53,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(Char expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(Char expression, NFA context) {
     int startNum = context.addState();
     int finalNum = context.addState();
     context.addTransition(startNum, expression.getChar(), finalNum);
@@ -61,7 +61,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(CharClass expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(CharClass expression, NFA context) {
     int startNum = context.addState();
     int finalNum = context.addState();
     for(int i = 0; i < Automata.NUM_ALPHABETS; i++) {
@@ -72,7 +72,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(Empty expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(Empty expression, NFA context) {
     int startNum = context.addState();
     int finalNum = context.addState();
     context.addEpsilon(startNum, finalNum);
@@ -81,7 +81,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(Repetition expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(Repetition expression, NFA context) {
     int startNum = context.addState();
     int finalNum = context.addState();
     Pair<Integer, Integer> result = expression.body.accept(this, context);
@@ -94,7 +94,7 @@ public class Regex2Dfa extends Regex.Visitor<Automata.Nfa, Pair<Integer, Integer
   }
 
   @Override
-  protected Pair<Integer, Integer> visit(Sequence expression, Nfa context) {
+  protected Pair<Integer, Integer> visit(Sequence expression, NFA context) {
     Pair<Integer, Integer> resultL = expression.lhs.accept(this, context);
     Pair<Integer, Integer> resultR = expression.rhs.accept(this, context);
     context.addEpsilon(resultL.snd(), resultR.fst());

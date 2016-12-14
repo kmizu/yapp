@@ -4,10 +4,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.kmizu.yapp.Ast;
-import com.github.kmizu.yapp.Automata;
 import com.github.kmizu.yapp.DirectedGraph;
 import com.github.kmizu.yapp.Regex;
-import com.github.kmizu.yapp.Regex2Dfa;
+import com.github.kmizu.yapp.Regex2DFA;
 import com.github.kmizu.yapp.Symbol;
 import com.github.kmizu.yapp.Ast.Action;
 import com.github.kmizu.yapp.Ast.AndPredicate;
@@ -29,22 +28,22 @@ import com.github.kmizu.yapp.Ast.SemanticPredicate;
 import com.github.kmizu.yapp.Ast.SetValueAction;
 import com.github.kmizu.yapp.Ast.StringLiteral;
 import com.github.kmizu.yapp.Ast.Wildcard;
-import com.github.kmizu.yapp.Automata.Dfa;
+import com.github.kmizu.yapp.Automata.DFA;
 import com.github.kmizu.yapp.util.CollectionUtil;
 
-public class Peg2DfaTranslator extends Ast.Visitor<Regex.Expression, Void>
-  implements Translator<Ast.Expression, Automata.Dfa> {
+public class PEG2DFATranslator extends Ast.Visitor<Regex.Expression, Void>
+  implements Translator<Ast.Expression, DFA> {
   private final DirectedGraph<Symbol, Boolean> refGraph;
   private final Map<Symbol, Expression> mapping;
   
-  public Peg2DfaTranslator(
+  public PEG2DFATranslator(
     DirectedGraph<Symbol, Boolean> refGraph,
     Map<Symbol, Expression> mapping) {
     this.refGraph = refGraph;
     this.mapping = mapping;
   }
 
-  public Dfa translate(Expression from) {
+  public DFA translate(Expression from) {
     Regex.Expression result = accept(from, null);
     if(result != Regex.ERROR) {
       result = new Regex.Sequence(
@@ -52,7 +51,7 @@ public class Peg2DfaTranslator extends Ast.Visitor<Regex.Expression, Void>
         new Regex.Repetition(new Regex.All())
       );
     }
-    return Regex2Dfa.INSTANCE.compile(result);
+    return Regex2DFA.INSTANCE.compile(result);
   }
 
   @Override

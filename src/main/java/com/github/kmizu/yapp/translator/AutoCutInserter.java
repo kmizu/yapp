@@ -36,10 +36,10 @@ import static com.github.kmizu.yapp.util.CollectionUtil.*;
 public class AutoCutInserter extends Visitor<Expression, AutoCutInserter.Context>
   implements Translator<Ast.Grammar, Ast.Grammar> {
   static final class Context {
-    Peg2DfaTranslator toDfa;
+    PEG2DFATranslator toDfa;
     Map<Symbol, Boolean> succeedRules;
     int countCutInserted;
-    Context(Peg2DfaTranslator toDfa, Map<Symbol, Boolean> succeedRules) {
+    Context(PEG2DFATranslator toDfa, Map<Symbol, Boolean> succeedRules) {
       this.toDfa = toDfa;
       this.succeedRules = succeedRules;
     }
@@ -52,7 +52,7 @@ public class AutoCutInserter extends Visitor<Expression, AutoCutInserter.Context
     for(Rule r:grammar) {
       mapping.put(r.name(), r.body());
     }
-    Peg2DfaTranslator toDfa = new Peg2DfaTranslator(
+    PEG2DFATranslator toDfa = new PEG2DFATranslator(
       RefGraphMaker.INSTANCE.translate(grammar), mapping
     );
     Map<Symbol, Boolean> succeedRules =
@@ -208,26 +208,26 @@ public class AutoCutInserter extends Visitor<Expression, AutoCutInserter.Context
   }
   
   private boolean allDisjoint(
-    Expression a, List<Expression> bs, Peg2DfaTranslator toDfa
+    Expression a, List<Expression> bs, PEG2DFATranslator toDfa
   ) {
-    Automata.Dfa dfaA = toDfa.translate(a);
-    if(dfaA == Automata.Dfa.ERROR) return false;
+    Automata.DFA dfaA = toDfa.translate(a);
+    if(dfaA == Automata.DFA.ERROR) return false;
     for(Expression b:bs) {
       if(b instanceof N_Sequence) {
         List<Expression> seq = ((N_Sequence)b).body();
         int i = seq.size();
         for(; i > 0; i--) {
-          Automata.Dfa dfaB = toDfa.translate(
+          Automata.DFA dfaB = toDfa.translate(
             new N_Sequence(b.pos(), seq.subList(0, i))
           );
-          if(dfaB == Automata.Dfa.ERROR) continue;
-          Automata.Dfa andDfa = dfaA.and(dfaB);
+          if(dfaB == Automata.DFA.ERROR) continue;
+          Automata.DFA andDfa = dfaA.and(dfaB);
           if(andDfa.isEmpty()) break;
         }
         if(i == 0) return false;
       }else {
-        Automata.Dfa dfaB = toDfa.translate(b);
-        if(dfaB == Automata.Dfa.ERROR) return false;
+        Automata.DFA dfaB = toDfa.translate(b);
+        if(dfaB == Automata.DFA.ERROR) return false;
         if(!dfaA.and(dfaB).isEmpty()) return false;
       }
     }

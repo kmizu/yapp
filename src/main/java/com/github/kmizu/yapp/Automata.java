@@ -9,9 +9,6 @@ package com.github.kmizu.yapp;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,13 +23,13 @@ import static com.github.kmizu.yapp.util.CollectionUtil.*;
  */
 public class Automata {
   public static final int NUM_ALPHABETS = Character.MAX_VALUE + 1;
-  public static class Nfa {
-    public final List<NfaState> states = list();
+  public static class NFA {
+    public final List<NFAState> states = list();
     public int startNum = -1;
     public int finalNum = -1;
     
     public int addState() {
-      NfaState state = new NfaState();
+      NFAState state = new NFAState();
       states.add(state);
       return states.size() - 1;
     }
@@ -50,7 +47,7 @@ public class Automata {
       while(true) {
         Set<Integer> copy = setFrom(result);
         for(int next : copy) {
-          NfaState state = states.get(next);
+          NFAState state = states.get(next);
           result.addAll(state.etrans);
         }
         if(result.size() == copy.size()) break;
@@ -74,7 +71,7 @@ public class Automata {
     }    
   }
   
-  public static class NfaState {
+  public static class NFAState {
     public final Set<Integer> etrans = set();
     public final Map<Character, Set<Integer>> strans = map();
     
@@ -92,18 +89,18 @@ public class Automata {
     }
   }
   
-  public static class Dfa {
-    public static final Dfa ERROR = new Dfa(null, -1, null);
+  public static class DFA {
+    public static final DFA ERROR = new DFA(null, -1, null);
     public final int[][] table;
     public final int start;
     public final Set<Integer> finals;
-    public Dfa(int[][] table, int start, Set<Integer> finals){
+    public DFA(int[][] table, int start, Set<Integer> finals){
       this.table = table;
       this.start = start;
       this.finals = finals;
     }
     
-    public Dfa and(Dfa rhs) {
+    public DFA and(DFA rhs) {
       int[][] newTable = new int[table.length * rhs.table.length][NUM_ALPHABETS];
       int newStart = rhs.table.length * start + rhs.start;
       Set<Integer> newFinals = set();
@@ -125,10 +122,10 @@ public class Automata {
           }
         }
       }
-      return new Dfa(newTable, newStart, newFinals);
+      return new DFA(newTable, newStart, newFinals);
     }
           
-    public boolean disjoint(Dfa dfa) {
+    public boolean disjoint(DFA dfa) {
       return this.and(dfa).isEmpty();
     }
     
@@ -193,7 +190,7 @@ public class Automata {
   }
   
   @SuppressWarnings("unchecked")
-  public static Dfa fromNfa2Dfa(Nfa nfa) {
+  public static DFA fromNFA2DFA(NFA nfa) {
     List<int[]>                                     tables  = list();
     Map<Set<Integer>, Integer>                      nfa2dfa = map();
     List<Set<Integer>>                              unmarked = list();
@@ -226,6 +223,6 @@ public class Automata {
     for(int stateNum : nfa2dfa.values()) {
       newTables[stateNum] = tables.get(stateNum);
     }
-    return new Dfa(newTables, start, finals);
+    return new DFA(newTables, start, finals);
   }
 }
