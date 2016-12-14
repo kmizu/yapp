@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class DirectedGraph<N, ExtraInfo> implements Iterable<N> {
-  private Set<N> nodes = new HashSet<N>();
-  private Map<N, Set<N>> edges = new HashMap<N, Set<N>>();
-  private Map<N, ExtraInfo> infoMap = new HashMap<N, ExtraInfo>();
+  private final Set<N> nodes = new HashSet<N>();
+  private final Map<N, Set<N>> edges = new HashMap<N, Set<N>>();
+  private final Map<N, ExtraInfo> infoMap = new HashMap<N, ExtraInfo>();
   private ExtraInfo defaultInfo;
   
   public DirectedGraph(ExtraInfo defaultInfo) {
