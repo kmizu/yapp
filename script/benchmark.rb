@@ -7,8 +7,8 @@ class Performance
   MAX_MEM = 500
   STEP = 10
   REPEAT = 20
-  BENCHMARK_CLASS = 'jp.gr.java_conf.mizu.yapp.benchmark.ParserBenchmark'
-  PARSER_PACKAGE='jp.gr.java_conf.mizu.yapp.benchmark'
+  BENCHMARK_CLASS = 'com.github.kmizu.yapp.benchmark.ParserBenchmark'
+  PARSER_PACKAGE='com.github.kmizu.yapp.benchmark'
   CLASSPATH="build;build.benchmark;#{RATS_DIR}\\rats-runtime.jar;#{RATS_DIR}\\xtc.jar"
   
   def initialize(dir, ext, result_file)
@@ -105,33 +105,6 @@ class HeapUsage
   end
 end
 
-puts "Java parser heap usage measurement..."
-
-HeapUsage.new('benchmark/javacc', '.java', 'heap_java_parser.csv').benchmark([
-  ['YappJavaRecognizer', 'NO-CUT'],
-  ['YappACJavaRecognizer', 'AUTO'],
-	['YappOptimizedJavaRecognizer', 'CUT'], 
-	['RatsJavaRecognizer', 'RATS'], 
-])
-
-puts "XML parser heap usage measurement..."
-
-HeapUsage.new('benchmark/ijs-elan2.0', '.tei', 'heap_xml_parser.csv').benchmark([
-  ['YappXMLRecognizer', 'NO-CUT'],
-  ['YappACXMLRecognizer', 'AUTO'],
-	['YappOptimizedXMLRecognizer', 'CUT'], 
-	['RatsXMLRecognizer', 'RATS'], 
-])
-
-puts "JSON parser heap usage measurement..."
-
-HeapUsage.new('benchmark/json-ijs-elan2.0', '.json', 'heap_json_parser.csv').benchmark([
-  ['YappJSONRecognizer', 'NO-CUT'],
-  ['YappACJSONRecognizer', 'AUTO'],
-  ['YappOptimizedJSONRecognizer', 'CUT'], 
-  ['RatsJSONRecognizer', 'RATS'], 
-])
-
 puts "ESLL parser heap usage measurement..."
 
 HeapUsage.new('benchmark/esll', '.esll', 'heap_esll_parser.csv').benchmark([
@@ -139,33 +112,6 @@ HeapUsage.new('benchmark/esll', '.esll', 'heap_esll_parser.csv').benchmark([
   ['YappACESLLRecognizer', 'AUTO'],
   ['YappOptimizedESLLRecognizer', 'CUT'], 
   ['RatsESLLRecognizer', 'RATS'], 
-])
-
-puts "Java parser performance measurement..."
-
-Performance.new('benchmark/javacc', '.java', 'perf_java_parser.csv').benchmark([
-  ['YappJavaRecognizer', 'NO-CUT'],
-  ['YappACJavaRecognizer', 'AUTO'],
-	['YappOptimizedJavaRecognizer', 'CUT'],
-	['RatsJavaRecognizer', 'RATS'], 
-])
-
-puts "XML parser performance measurement..."
-
-Performance.new('benchmark/ijs-elan2.0', '.tei', 'perf_xml_parser.csv').benchmark([
-  ['YappXMLRecognizer', 'NO-CUT'],
-  ['YappACXMLRecognizer', 'AUTO'],
-  ['YappOptimizedXMLRecognizer', 'CUT'],
-  ['RatsXMLRecognizer', 'RATS'], 
-])
-
-puts "JSON parser performance measurement..."
-
-Performance.new('benchmark/json-ijs-elan2.0', '.json', 'perf_json_parser.csv').benchmark([
-  ['YappJSONRecognizer', 'NO-CUT'],
-  ['YappACJSONRecognizer', 'AUTO'],
-  ['YappOptimizedJSONRecognizer', 'CUT'],
-  ['RatsJSONRecognizer', 'RATS'], 
 ])
 
 puts "ESLL parser performance measurement..."
