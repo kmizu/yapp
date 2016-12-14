@@ -6,5 +6,5 @@ cache:
   - $HOME/.sbt/launchers
 jdk: oraclejdk8
 script:
-- sbt ++$TRAVIS_SCALA_VERSION compile
+- sbt ++$TRAVIS_SCALA_VERSION "project benchmark" compile
 scala: 2.12.1
