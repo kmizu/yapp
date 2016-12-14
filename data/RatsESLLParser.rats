@@ -1,4 +1,4 @@
-module jp.gr.java_conf.mizu.yapp.benchmark.parser.RatsESLLParser;
+module com.github.kmizu.yapp.benchmark.parser.RatsESLLParser;
 
 public void program = S declaration+ EOT;
 void declaration = functionDeclaration / variableDeclaration;
